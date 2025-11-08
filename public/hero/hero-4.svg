@@ -1,0 +1,13 @@
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9a3412;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ca8a04;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#grad4)"/>
+  <text x="50%" y="45%" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">Kurumsal Yazılım</text>
+  <text x="50%" y="55%" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">Çözümleri</text>
+  <text x="50%" y="65%" font-family="Arial, sans-serif" font-size="32" fill="#e0e0e0" text-anchor="middle">İşletmenize Özel Sistemler</text>
+</svg>

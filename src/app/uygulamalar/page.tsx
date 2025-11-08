@@ -114,13 +114,13 @@ export default function ApplicationsPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50">
+      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50 animate-fade-in-down">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-4">
               <Image
                 src="/logo2.png"
-                alt="Vulpax Software"
+                alt="Vulpax Digital"
                 width={40}
                 height={40}
                 className="rounded-lg"
@@ -129,7 +129,7 @@ export default function ApplicationsPage() {
                 <h1 className="text-xl font-bold text-white logo-font">
                   VULPA<span className="text-red-500">X</span>
                 </h1>
-                <p className="text-xs text-zinc-400">SOFTWARE</p>
+                <p className="text-xs text-zinc-400">DIGITAL</p>
               </div>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
@@ -198,18 +198,18 @@ export default function ApplicationsPage() {
 
       {/* Hero Section */}
       <section className="py-12 border-b border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Ücretsiz Uygulamalar
           </h1>
           <p className="text-zinc-400 text-lg">
-            Vulpax Software tarafından geliştirilen ücretsiz uygulamaları keşfedin
+            Vulpax Digital tarafından geliştirilen ücretsiz uygulamaları keşfedin
           </p>
         </div>
       </section>
 
       {/* Category Filter */}
-      <section className="py-6 border-b border-zinc-800 sticky top-[73px] bg-black z-30">
+      <section className="py-6 border-b border-zinc-800 sticky top-[73px] bg-black z-30 animate-fade-in">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             <button
@@ -243,11 +243,11 @@ export default function ApplicationsPage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-6">
           {loading ? (
-            <div className="text-center py-20">
+            <div className="text-center py-20 animate-fade-in">
               <div className="text-zinc-400 text-lg">Uygulamalar yükleniyor...</div>
             </div>
           ) : applications.length === 0 ? (
-            <div className="text-center py-20">
+            <div className="text-center py-20 animate-fade-in">
               <div className="text-zinc-400 text-lg">
                 {selectedCategory
                   ? 'Bu kategoride henüz uygulama bulunmuyor.'
@@ -255,12 +255,12 @@ export default function ApplicationsPage() {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
               {applications.map((app) => (
                 <Link
                   key={app.id}
                   href={`/uygulamalar/${app.id}`}
-                  className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 group hover-lift"
+                  className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 group hover:shadow-2xl hover:shadow-red-500/10 hover:-translate-y-2"
                 >
                   {/* App Image */}
                   <div className="aspect-video bg-zinc-800 relative overflow-hidden">

@@ -462,13 +462,13 @@ export default function ApplicationDetailPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50">
+      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50 animate-fade-in-down">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-4">
               <Image
                 src="/logo2.png"
-                alt="Vulpax Software"
+                alt="Vulpax Digital"
                 width={40}
                 height={40}
                 className="rounded-lg"
@@ -477,7 +477,7 @@ export default function ApplicationDetailPage() {
                 <h1 className="text-xl font-bold text-white logo-font">
                   VULPA<span className="text-red-500">X</span>
                 </h1>
-                <p className="text-xs text-zinc-400">SOFTWARE</p>
+                <p className="text-xs text-zinc-400">DIGITAL</p>
               </div>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
@@ -543,7 +543,7 @@ export default function ApplicationDetailPage() {
           {/* Left Column - Main Info */}
           <div className="lg:col-span-2 space-y-8">
             {/* App Header */}
-            <div>
+            <div className="animate-fade-in-up">
               <div className="flex items-center gap-3 mb-4">
                 <Link
                   href="/uygulamalar"
@@ -563,7 +563,7 @@ export default function ApplicationDetailPage() {
 
             {/* App Image */}
             {application.image_url && (
-              <div className="aspect-video bg-zinc-900 border border-zinc-800 relative overflow-hidden">
+              <div className="aspect-video bg-zinc-900 border border-zinc-800 relative overflow-hidden animate-fade-in-up delay-100">
                 <Image
                   src={application.image_url}
                   alt={application.title}
@@ -575,7 +575,7 @@ export default function ApplicationDetailPage() {
 
             {/* Features */}
             {application.features && application.features.length > 0 && (
-              <div className="bg-zinc-900 border border-zinc-800 p-6">
+              <div className="bg-zinc-900 border border-zinc-800 p-6 animate-fade-in-up delay-200">
                 <h2 className="text-2xl font-bold mb-4">Özellikler</h2>
                 <ul className="space-y-2">
                   {application.features.map((feature, index) => (
@@ -602,14 +602,14 @@ export default function ApplicationDetailPage() {
 
             {/* Requirements */}
             {application.requirements && (
-              <div className="bg-zinc-900 border border-zinc-800 p-6">
+              <div className="bg-zinc-900 border border-zinc-800 p-6 animate-fade-in-up delay-300">
                 <h2 className="text-2xl font-bold mb-4">Sistem Gereksinimleri</h2>
                 <p className="text-zinc-300 whitespace-pre-line">{application.requirements}</p>
               </div>
             )}
 
             {/* Comments Section */}
-            <div className="bg-zinc-900 border border-zinc-800 p-6">
+            <div className="bg-zinc-900 border border-zinc-800 p-6 animate-fade-in-up delay-400">
               <h2 className="text-2xl font-bold mb-6">
                 Yorumlar ({getTotalCommentsCount(comments)})
               </h2>
@@ -696,7 +696,7 @@ export default function ApplicationDetailPage() {
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
             {/* Download Card */}
-            <div className="bg-zinc-900 border border-zinc-800 p-6 sticky top-24">
+            <div className="bg-zinc-900 border border-zinc-800 p-6 sticky top-24 animate-fade-in-left">
               <div className="space-y-4">
                 <div>
                   <div className="text-sm text-zinc-400 mb-1">Versiyon</div>

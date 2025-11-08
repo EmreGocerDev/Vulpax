@@ -43,18 +43,11 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
         <div className="absolute top-full left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-40">
           <div className="flex flex-col p-6 space-y-4">
             <a 
-              href="#products" 
+              href="/demolar" 
               className="text-zinc-300 hover:text-white transition-colors py-2"
               onClick={() => setIsOpen(false)}
             >
-              Ürünler
-            </a>
-            <a 
-              href="#services" 
-              className="text-zinc-300 hover:text-white transition-colors py-2"
-              onClick={() => setIsOpen(false)}
-            >
-              Hizmetler
+              Demolar
             </a>
             <a 
               href="#contact" 
@@ -73,7 +66,7 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
             </a>
 
             <a 
-              href="/references" 
+              href="/referanslar" 
               className="text-zinc-300 hover:text-white transition-colors py-2"
               onClick={() => setIsOpen(false)}
             >

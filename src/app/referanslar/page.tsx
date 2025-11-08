@@ -25,7 +25,7 @@ interface Reference {
   images?: ReferenceImage[];
 }
 
-export default function ReferencesPage() {
+export default function ReferanslarPage() {
   const { user, loading: authLoading, signOut } = useAuth();
   const [references, setReferences] = useState<Reference[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,6 @@ export default function ReferencesPage() {
 
   const fetchReferences = async () => {
     try {
-      // Fetch references
       const { data: refsData, error: refsError } = await supabase
         .from('references')
         .select('*')
@@ -53,7 +52,6 @@ export default function ReferencesPage() {
         return;
       }
 
-      // Fetch images for all references
       const { data: imagesData, error: imagesError } = await supabase
         .from('reference_images')
         .select('*')
@@ -62,7 +60,6 @@ export default function ReferencesPage() {
 
       if (imagesError) throw imagesError;
 
-      // Combine data
       const referencesWithImages = refsData.map(ref => ({
         ...ref,
         images: imagesData?.filter(img => img.reference_id === ref.id) || []
@@ -128,9 +125,8 @@ export default function ReferencesPage() {
               </div>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="/#products" className="text-zinc-300 hover:text-white transition-colors">Ürünler</a>
-              <a href="/#services" className="text-zinc-300 hover:text-white transition-colors">Hizmetler</a>
-              <a href="/references" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
+              <a href="/demolar" className="text-zinc-300 hover:text-white transition-colors">Demolar</a>
+              <a href="/referanslar" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
               <a href="/#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
               <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
               {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
@@ -161,7 +157,7 @@ export default function ReferencesPage() {
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="text-center mb-12 animate-fade-in-up">
-          <h1 className="text-5xl font-bold mb-4">REFERANSLARIMIZ</h1>
+          <h1 className="text-5xl font-bold mb-4">TÜM REFERANSLARIMIZ</h1>
           <p className="text-zinc-400 text-lg">
             Birlikte çalıştığımız başarılı projeler ve iş ortaklıkları
           </p>
@@ -178,7 +174,6 @@ export default function ReferencesPage() {
                 key={reference.id}
                 className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 overflow-hidden group hover:shadow-2xl hover:shadow-red-500/10 hover:-translate-y-2"
               >
-                {/* Banner Image */}
                 {reference.images && reference.images.length > 0 && (
                   <div
                     className="relative aspect-video cursor-pointer"
@@ -198,9 +193,7 @@ export default function ReferencesPage() {
                   </div>
                 )}
 
-                {/* Content */}
                 <div className="p-6">
-                  {/* Logo */}
                   {reference.logo_url && (
                     <div className="mb-4 flex justify-center">
                       <div className="bg-white p-3 rounded-lg inline-block">
@@ -215,17 +208,14 @@ export default function ReferencesPage() {
                     </div>
                   )}
 
-                  {/* Company Name */}
                   <h3 className="text-xl font-bold text-white mb-3 text-center">
                     {reference.company_name}
                   </h3>
 
-                  {/* Description */}
                   <p className="text-zinc-400 text-sm line-clamp-3 text-center">
                     {reference.description}
                   </p>
 
-                  {/* View Button */}
                   {reference.images && reference.images.length > 0 && (
                     <button
                       onClick={() => openLightbox(reference, 0)}
@@ -244,7 +234,6 @@ export default function ReferencesPage() {
       {/* Lightbox Modal */}
       {selectedRef && selectedRef.images && selectedRef.images.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
-          {/* Close Button */}
           <button
             onClick={closeLightbox}
             className="absolute top-4 right-4 text-white text-4xl hover:text-red-500 transition-colors z-10"
@@ -252,7 +241,6 @@ export default function ReferencesPage() {
             ✕
           </button>
 
-          {/* Navigation Arrows */}
           {selectedRef.images.length > 1 && (
             <>
               <button
@@ -270,7 +258,6 @@ export default function ReferencesPage() {
             </>
           )}
 
-          {/* Image Container */}
           <div className="max-w-6xl w-full">
             <div className="relative aspect-video mb-4">
               <Image
@@ -281,7 +268,6 @@ export default function ReferencesPage() {
               />
             </div>
 
-            {/* Info */}
             <div className="text-center">
               <h3 className="text-white text-2xl font-bold mb-2">
                 {selectedRef.company_name}
@@ -292,7 +278,6 @@ export default function ReferencesPage() {
               </p>
             </div>
 
-            {/* Thumbnails */}
             {selectedRef.images.length > 1 && (
               <div className="flex justify-center gap-2 mt-4 overflow-x-auto">
                 {selectedRef.images.map((img, index) => (

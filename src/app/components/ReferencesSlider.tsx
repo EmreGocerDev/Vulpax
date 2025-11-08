@@ -98,9 +98,9 @@ export default function ReferencesSlider() {
 
   if (loading) {
     return (
-      <section className="py-20 px-6 bg-zinc-950">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="text-zinc-500">Yükleniyor...</div>
+      <section className="py-12 px-6 bg-zinc-950">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="text-zinc-500 text-sm">Yükleniyor...</div>
         </div>
       </section>
     );
@@ -116,12 +116,12 @@ export default function ReferencesSlider() {
     : null;
 
   return (
-    <section className="py-20 px-6 bg-zinc-950">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-12 px-6 bg-zinc-950">
+      <div className="max-w-6xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 text-white">REFERANSLARIMIZ</h2>
-          <p className="text-zinc-400 text-lg">Birlikte çalıştığımız başarılı projeler</p>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2 text-white">REFERANSLARIMIZ</h2>
+          <p className="text-zinc-400 text-sm">Birlikte çalıştığımız başarılı projeler</p>
         </div>
 
         {/* Slider Container */}
@@ -143,16 +143,16 @@ export default function ReferencesSlider() {
             )}
 
             {/* Content Overlay */}
-            <div className={`${displayImage ? 'absolute bottom-0 left-0 right-0' : ''} p-8 md:p-12`}>
-              <div className="flex items-start gap-6">
+            <div className={`${displayImage ? 'absolute bottom-0 left-0 right-0' : ''} p-4 md:p-6`}>
+              <div className="flex items-start gap-4">
                 {/* Logo */}
                 {currentRef.logo_url && (
-                  <div className="shrink-0 bg-white p-4 rounded-lg hidden md:block">
+                  <div className="shrink-0 bg-white p-2 rounded hidden md:block">
                     <Image
                       src={currentRef.logo_url}
                       alt={currentRef.company_name}
-                      width={80}
-                      height={80}
+                      width={50}
+                      height={50}
                       className="object-contain"
                     />
                   </div>
@@ -160,10 +160,10 @@ export default function ReferencesSlider() {
 
                 {/* Text Content */}
                 <div className="flex-1">
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                  <h3 className="text-lg md:text-xl font-bold text-white mb-2">
                     {currentRef.company_name}
                   </h3>
-                  <p className="text-zinc-300 text-sm md:text-base line-clamp-3">
+                  <p className="text-zinc-300 text-xs md:text-sm line-clamp-2">
                     {currentRef.description}
                   </p>
                 </div>
@@ -175,19 +175,19 @@ export default function ReferencesSlider() {
               <>
                 <button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 transition-all opacity-0 group-hover:opacity-100"
                   aria-label="Previous"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 transition-all opacity-0 group-hover:opacity-100"
                   aria-label="Next"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -197,74 +197,28 @@ export default function ReferencesSlider() {
 
           {/* Dots Navigation */}
           {references.length > 1 && (
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-2 mt-4">
               {references.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`h-2 transition-all ${
+                  className={`h-1.5 transition-all ${
                     index === currentIndex
-                      ? 'w-8 bg-white'
-                      : 'w-2 bg-zinc-600 hover:bg-zinc-500'
+                      ? 'w-6 bg-white'
+                      : 'w-1.5 bg-zinc-600 hover:bg-zinc-500'
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
             </div>
           )}
-
-          {/* Thumbnail Grid (Desktop - Show 3, Mobile - Show 1) */}
-          {references.length > 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              {references
-                .slice(0, 3)
-                .map((ref, idx) => (
-                  <button
-                    key={ref.id}
-                    onClick={() => goToSlide(references.indexOf(ref))}
-                    className={`relative aspect-video bg-zinc-900 border-2 transition-all overflow-hidden group ${
-                      references.indexOf(ref) === currentIndex
-                        ? 'border-white'
-                        : 'border-zinc-800 hover:border-zinc-600'
-                    }`}
-                  >
-                    {ref.images && ref.images.length > 0 && (
-                      <Image
-                        src={ref.images[0].image_url}
-                        alt={ref.company_name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent flex items-end p-4">
-                      <div className="text-left">
-                        {ref.logo_url && (
-                          <div className="bg-white p-2 rounded mb-2 inline-block">
-                            <Image
-                              src={ref.logo_url}
-                              alt={ref.company_name}
-                              width={40}
-                              height={40}
-                              className="object-contain"
-                            />
-                          </div>
-                        )}
-                        <h4 className="text-white font-bold text-sm">
-                          {ref.company_name}
-                        </h4>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-            </div>
-          )}
         </div>
 
         {/* View All Link */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-6">
           <Link
-            href="/references"
-            className="inline-block bg-white text-black px-8 py-3 font-semibold hover:bg-zinc-200 transition-colors"
+            href="/referanslar"
+            className="inline-block bg-white text-black px-6 py-2 text-sm font-semibold hover:bg-zinc-200 transition-colors"
           >
             TÜM REFERANSLARI GÖR
           </Link>
