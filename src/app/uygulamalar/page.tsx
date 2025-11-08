@@ -7,6 +7,9 @@ import Link from "next/link";
 import { useAuth } from "../hooks/useAuth";
 import UserMenu from "../components/UserMenu";
 import MobileMenu from "../components/MobileMenu";
+import LoginModal from "../components/LoginModal";
+import SignUpModal from "../components/SignUpModal";
+import ForgotPasswordModal from "../components/ForgotPasswordModal";
 import { supabase } from "@/lib/supabase";
 
 interface Category {
@@ -31,12 +34,14 @@ interface Application {
 
 export default function ApplicationsPage() {
   const { user, loading: authLoading, signOut } = useAuth();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
   const router = useRouter();
   const [applications, setApplications] = useState<Application[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -106,29 +111,10 @@ export default function ApplicationsPage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Giriş Gerekli</h1>
-          <p className="text-zinc-400 mb-8">
-            Uygulamaları görüntülemek için giriş yapmanız gerekiyor.
-          </p>
-          <Link
-            href="/"
-            className="bg-white text-black px-6 py-3 font-semibold hover:bg-zinc-200 transition-colors"
-          >
-            Ana Sayfaya Dön
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-40">
+      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-4">
@@ -147,27 +133,77 @@ export default function ApplicationsPage() {
               </div>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-zinc-300 hover:text-white transition-colors">
-                Ana Sayfa
-              </Link>
-              <Link href="/uygulamalar" className="text-white font-semibold">
-                Uygulamalar
-              </Link>
-              <UserMenu user={user} onSignOut={signOut} />
+              <a href="/#products" className="text-zinc-300 hover:text-white transition-colors">Ürünler</a>
+              <a href="/#services" className="text-zinc-300 hover:text-white transition-colors">Hizmetler</a>
+              <a href="/references" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
+              <a href="/#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
+              <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
+              {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
+                <a href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Editör
+                </a>
+              )}
+              {!authLoading && (
+                user ? (
+                  <UserMenu user={user} onSignOut={signOut} />
+                ) : (
+                  <div className="button-borders">
+                    <button 
+                      onClick={() => setIsLoginModalOpen(true)}
+                      className="primary-button"
+                    >
+                      GİRİŞ YAP
+                    </button>
+                  </div>
+                )
+              )}
             </nav>
-            <MobileMenu onLoginClick={() => {}} user={user} onSignOut={signOut} />
+            <MobileMenu onLoginClick={() => setIsLoginModalOpen(true)} user={user} onSignOut={signOut} />
           </div>
         </div>
       </header>
+      
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSwitchToSignUp={() => {
+          setIsLoginModalOpen(false);
+          setIsSignUpModalOpen(true);
+        }}
+        onSwitchToForgotPassword={() => {
+          setIsLoginModalOpen(false);
+          setIsForgotPasswordModalOpen(true);
+        }}
+      />
+      <SignUpModal
+        isOpen={isSignUpModalOpen}
+        onClose={() => setIsSignUpModalOpen(false)}
+        onSwitchToLogin={() => {
+          setIsSignUpModalOpen(false);
+          setIsLoginModalOpen(true);
+        }}
+      />
+      <ForgotPasswordModal
+        isOpen={isForgotPasswordModalOpen}
+        onClose={() => setIsForgotPasswordModalOpen(false)}
+        onSwitchToLogin={() => {
+          setIsForgotPasswordModalOpen(false);
+          setIsLoginModalOpen(true);
+        }}
+      />
 
       {/* Hero Section */}
       <section className="py-12 border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-6">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Uygulamalar
+            Ücretsiz Uygulamalar
           </h1>
           <p className="text-zinc-400 text-lg">
-            Vulpax Software tarafından geliştirilen uygulamaları keşfedin
+            Vulpax Software tarafından geliştirilen ücretsiz uygulamaları keşfedin
           </p>
         </div>
       </section>
@@ -178,7 +214,7 @@ export default function ApplicationsPage() {
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             <button
               onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 whitespace-nowrap transition-colors ${
+              className={`px-4 py-2 whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                 selectedCategory === null
                   ? 'bg-white text-black'
                   : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -190,7 +226,7 @@ export default function ApplicationsPage() {
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 whitespace-nowrap transition-colors ${
+                className={`px-4 py-2 whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   selectedCategory === category.id
                     ? 'bg-white text-black'
                     : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
@@ -224,7 +260,7 @@ export default function ApplicationsPage() {
                 <Link
                   key={app.id}
                   href={`/uygulamalar/${app.id}`}
-                  className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all group"
+                  className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 group hover-lift"
                 >
                   {/* App Image */}
                   <div className="aspect-video bg-zinc-800 relative overflow-hidden">

@@ -4,14 +4,18 @@ import Image from "next/image";
 import { useState } from "react";
 import LoginModal from "./components/LoginModal";
 import SignUpModal from "./components/SignUpModal";
+import ForgotPasswordModal from "./components/ForgotPasswordModal";
 import MobileMenu from "./components/MobileMenu";
 import HeroSlider from "./components/HeroSlider";
 import UserMenu from "./components/UserMenu";
+import ReferencesSlider from "./components/ReferencesSlider";
 import { useAuth } from "./hooks/useAuth";
 
 export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
   const { user, loading, signOut } = useAuth();
 
   const products = [
@@ -68,7 +72,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="border-b border-zinc-800 relative">
+      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -89,29 +93,30 @@ export default function Home() {
             <nav className="hidden md:flex items-center space-x-8">
               <a href="#products" className="text-zinc-300 hover:text-white transition-colors">Ürünler</a>
               <a href="#services" className="text-zinc-300 hover:text-white transition-colors">Hizmetler</a>
+              <a href="/references" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
               <a href="#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
-              {user && (
-                <>
-                  <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Uygulamalar</a>
-                  <a href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Editör
-                  </a>
-                </>
+              <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
+              {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
+                <a href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Editör
+                </a>
               )}
               {!loading && (
                 user ? (
                   <UserMenu user={user} onSignOut={signOut} />
                 ) : (
-                  <button 
-                    onClick={() => setIsLoginModalOpen(true)}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 border border-zinc-600 transition-all duration-300 hover:border-zinc-400"
-                  >
-                    Giriş Yap
-                  </button>
+                  <div className="button-borders">
+                    <button 
+                      onClick={() => setIsLoginModalOpen(true)}
+                      className="primary-button"
+                    >
+                      GİRİŞ YAP
+                    </button>
+                  </div>
                 )
               )}
             </nav>
@@ -144,13 +149,17 @@ export default function Home() {
                 Modern teknolojilerle güçlendirilmiş, özelleştirilebilir yazılım çözümleri ve 
                 seamless web entegrasyonları ile işinizi dijital dönüşümde önde tutun.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-black px-8 py-3 font-semibold hover:bg-zinc-200 transition-colors shadow-lg">
-                  ÜRÜNLERİ KEŞFET
-                </button>
-                <button className="border border-zinc-600 bg-black/30 backdrop-blur-sm text-white px-8 py-3 font-semibold hover:border-zinc-400 hover:bg-black/50 transition-colors">
-                  DEMO TALEBİ
-                </button>
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <div className="button-borders">
+                  <button className="primary-button">
+                    ÜRÜNLERİ KEŞFET
+                  </button>
+                </div>
+                <div className="button-borders">
+                  <button className="secondary-button">
+                    DEMO TALEBİ
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -210,6 +219,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* References Section */}
+      <ReferencesSlider />
 
       {/* Services Section */}
       <section id="services" className="py-20 px-6">
@@ -302,6 +314,11 @@ export default function Home() {
           setIsLoginModalOpen(false);
           setIsSignUpModalOpen(true);
         }}
+        onSwitchToForgotPassword={(email) => {
+          setResetEmail(email);
+          setIsLoginModalOpen(false);
+          setIsForgotPasswordModalOpen(true);
+        }}
       />
 
       {/* SignUp Modal */}
@@ -311,6 +328,21 @@ export default function Home() {
         onSwitchToLogin={() => {
           setIsSignUpModalOpen(false);
           setIsLoginModalOpen(true);
+        }}
+      />
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal 
+        isOpen={isForgotPasswordModalOpen} 
+        initialEmail={resetEmail}
+        onClose={() => {
+          setIsForgotPasswordModalOpen(false);
+          setResetEmail("");
+        }}
+        onSwitchToLogin={() => {
+          setIsForgotPasswordModalOpen(false);
+          setIsLoginModalOpen(true);
+          setResetEmail("");
         }}
       />
     </div>

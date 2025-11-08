@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useAuth } from "../../hooks/useAuth";
 import UserMenu from "../../components/UserMenu";
 import MobileMenu from "../../components/MobileMenu";
+import LoginModal from "../../components/LoginModal";
+import SignUpModal from "../../components/SignUpModal";
 import { supabase } from "@/lib/supabase";
 
 interface Category {
@@ -126,9 +128,9 @@ function CommentItem({
           {depth < maxDepth && (
             <button
               onClick={() => onReply(comment.id)}
-              className="text-xs text-zinc-400 hover:text-white transition-colors"
+              className="text-xs text-zinc-400 hover:text-white transition-colors font-semibold uppercase tracking-wider"
             >
-              Cevapla
+              ↳ Cevapla
             </button>
           )}
 
@@ -142,20 +144,24 @@ function CommentItem({
                 rows={2}
                 className="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 text-white text-sm placeholder-zinc-500 focus:border-zinc-500 focus:outline-none mb-2"
               />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleReplySubmit(comment.id)}
-                  disabled={isSubmitting || !replyText.trim()}
-                  className="bg-white text-black px-4 py-1 text-sm font-semibold hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Gönderiliyor...' : 'Gönder'}
-                </button>
-                <button
-                  onClick={() => onReply(null)}
-                  className="bg-zinc-800 text-white px-4 py-1 text-sm font-semibold hover:bg-zinc-700 transition-colors"
-                >
-                  İptal
-                </button>
+              <div className="flex gap-3">
+                <div className="button-borders">
+                  <button
+                    onClick={() => handleReplySubmit(comment.id)}
+                    disabled={isSubmitting || !replyText.trim()}
+                    className="primary-button text-xs! py-2! px-4! disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'GÖNDERİLİYOR...' : 'GÖNDER'}
+                  </button>
+                </div>
+                <div className="button-borders">
+                  <button
+                    onClick={() => onReply(null)}
+                    className="secondary-button text-xs! py-2! px-4!"
+                  >
+                    İPTAL
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -199,6 +205,9 @@ export default function ApplicationDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     if (params.id) {
@@ -440,25 +449,6 @@ export default function ApplicationDetailPage() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Giriş Gerekli</h1>
-          <p className="text-zinc-400 mb-8">
-            Uygulamaları görüntülemek için giriş yapmanız gerekiyor.
-          </p>
-          <Link
-            href="/"
-            className="bg-white text-black px-6 py-3 font-semibold hover:bg-zinc-200 transition-colors"
-          >
-            Ana Sayfaya Dön
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   if (!application) {
     return null;
   }
@@ -472,7 +462,7 @@ export default function ApplicationDetailPage() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-40">
+      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-4">
@@ -491,18 +481,61 @@ export default function ApplicationDetailPage() {
               </div>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-zinc-300 hover:text-white transition-colors">
-                Ana Sayfa
-              </Link>
-              <Link href="/uygulamalar" className="text-white font-semibold">
-                Uygulamalar
-              </Link>
-              <UserMenu user={user} onSignOut={signOut} />
+              <a href="/#products" className="text-zinc-300 hover:text-white transition-colors">Ürünler</a>
+              <a href="/#services" className="text-zinc-300 hover:text-white transition-colors">Hizmetler</a>
+              <a href="/references" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
+              <a href="/#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
+              <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
+              {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
+                <a href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Editör
+                </a>
+              )}
+              {!authLoading && (
+                user ? (
+                  <UserMenu user={user} onSignOut={signOut} />
+                ) : (
+                  <div className="button-borders">
+                    <button 
+                      onClick={() => setIsLoginModalOpen(true)}
+                      className="primary-button"
+                    >
+                      GİRİŞ YAP
+                    </button>
+                  </div>
+                )
+              )}
             </nav>
-            <MobileMenu onLoginClick={() => {}} user={user} onSignOut={signOut} />
+            <MobileMenu onLoginClick={() => setIsLoginModalOpen(true)} user={user} onSignOut={signOut} />
+            <MobileMenu onLoginClick={() => setIsLoginModalOpen(true)} user={user} onSignOut={signOut} />
           </div>
         </div>
       </header>
+
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSwitchToSignUp={() => {
+          setIsLoginModalOpen(false);
+          setIsSignUpModalOpen(true);
+        }}
+        onSwitchToForgotPassword={() => {
+          setIsLoginModalOpen(false);
+          setIsForgotPasswordModalOpen(true);
+        }}
+      />
+      <SignUpModal
+        isOpen={isSignUpModalOpen}
+        onClose={() => setIsSignUpModalOpen(false)}
+        onSwitchToLogin={() => {
+          setIsSignUpModalOpen(false);
+          setIsLoginModalOpen(true);
+        }}
+      />
 
       {/* Application Detail */}
       <div className="max-w-7xl mx-auto px-6 py-12">
@@ -582,44 +615,55 @@ export default function ApplicationDetailPage() {
               </h2>
 
               {/* Comment Form */}
-              <form onSubmit={handleCommentSubmit} className="mb-8">
-                <div className="mb-4">
-                  <label className="block text-xs font-medium text-zinc-400 mb-2">
-                    Değerlendirme: <span className="text-white">{rating}/5</span>
-                  </label>
-                  <div className="flex gap-0.5 max-w-xs">
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => setRating(value)}
-                        className={`h-2 flex-1 transition-all ${
-                          value <= rating
-                            ? 'bg-white'
-                            : 'bg-zinc-800 hover:bg-zinc-700'
-                        }`}
-                        title={`${value}/5`}
-                      />
-                    ))}
+              {user ? (
+                <form onSubmit={handleCommentSubmit} className="mb-8">
+                  <div className="mb-4">
+                    <label className="block text-xs font-medium text-zinc-400 mb-2">
+                      Değerlendirme: <span className="text-white">{rating}/5</span>
+                    </label>
+                    <div className="flex gap-0.5 max-w-xs">
+                      {[1, 2, 3, 4, 5].map((value) => (
+                        <button
+                          key={value}
+                          type="button"
+                          onClick={() => setRating(value)}
+                          className={`h-2 flex-1 transition-all ${
+                            value <= rating
+                              ? 'bg-white'
+                              : 'bg-zinc-800 hover:bg-zinc-700'
+                          }`}
+                          title={`${value}/5`}
+                        />
+                      ))}
+                    </div>
                   </div>
+
+                  <textarea
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Yorumunuzu yazın..."
+                    rows={4}
+                    className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none mb-4"
+                  />
+
+                  <div className="button-borders">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !commentText.trim()}
+                      className="primary-button disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? 'GÖNDERİLİYOR...' : 'YORUM YAP'}
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="mb-8 bg-zinc-800 border border-zinc-700 p-6 text-center">
+                  <p className="text-zinc-400 mb-4">Yorum yapmak için giriş yapmanız gerekiyor</p>
+                  <Link href="/" className="inline-block bg-white text-black px-6 py-3 font-semibold hover:bg-zinc-200 transition-colors">
+                    Giriş Yap
+                  </Link>
                 </div>
-
-                <textarea
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Yorumunuzu yazın..."
-                  rows={4}
-                  className="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none mb-4"
-                />
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !commentText.trim()}
-                  className="bg-white text-black px-6 py-2 font-semibold hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Gönderiliyor...' : 'Yorum Yap'}
-                </button>
-              </form>
+              )}
 
               {/* Comments List */}
               <div className="space-y-6">
@@ -692,21 +736,34 @@ export default function ApplicationDetailPage() {
                 )}
 
                 <div className="pt-4 border-t border-zinc-800">
-                  <button
-                    onClick={handleDownload}
-                    className="w-full bg-white text-black py-3 font-semibold hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                      />
-                    </svg>
-                    {hasDownloaded ? 'Tekrar İndir' : 'İndir'}
-                  </button>
-                  {hasDownloaded && (
+                  {user ? (
+                    <div className="button-borders w-full">
+                      <button
+                        onClick={handleDownload}
+                        className="primary-button w-full flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        {hasDownloaded ? 'TEKRAR İNDİR' : 'İNDİR'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="bg-zinc-800 border border-zinc-700 p-4 text-center mb-3">
+                        <p className="text-zinc-400 text-sm mb-3">İndirmek için giriş yapmanız gerekiyor</p>
+                        <Link href="/" className="inline-block bg-white text-black px-6 py-3 font-semibold hover:bg-zinc-200 transition-colors text-sm">
+                          Giriş Yap
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                  {user && hasDownloaded && (
                     <p className="text-xs text-zinc-500 text-center mt-2">
                       Bu uygulamayı daha önce indirdiniz
                     </p>
