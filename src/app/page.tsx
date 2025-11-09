@@ -11,6 +11,7 @@ import UserMenu from "./components/UserMenu";
 import ReferencesSlider from "./components/ReferencesSlider";
 import ContactForm from "./components/ContactForm";
 import DemoPages from "./components/DemoPages";
+import PricingSection from "./components/PricingSection";
 import { useAuth } from "./hooks/useAuth";
 
 export default function Home() {
@@ -82,6 +83,9 @@ export default function Home() {
           <HeroSlider />
         </div>
       </section>
+
+      {/* Pricing Section */}
+      <PricingSection />
 
       {/* Demo Pages Section - From DEMOS table */}
       <DemoPages />

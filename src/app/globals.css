@@ -832,3 +832,278 @@ img {
 .hero-cta-button:hover::after {
   transform: scaleX(0);
 }
+
+/* ===================================
+   PRICING CARDS WITH ANIMATED GLOW
+   =================================== */
+
+.pricing-card-container {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  height: 480px;
+  border-radius: 0;
+  margin: 0 auto;
+}
+
+.pricing-card-border {
+  position: absolute;
+  inset: 0;
+  background: #0005;
+  border-radius: inherit;
+}
+
+.pricing-card {
+  position: absolute;
+  inset: 0.125em;
+  border-radius: 0;
+  background: #111215;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.pricing-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  z-index: 10;
+}
+
+.pricing-header {
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}
+
+.pricing-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  flex: 1;
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  color: #bebebe;
+  font-size: 0.875rem;
+}
+
+.pricing-check {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  color: #63d188;
+  margin-top: 0.125rem;
+}
+
+.pricing-button {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.pricing-button:hover::before {
+  left: 100%;
+}
+
+.pricing-button:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+
+.pricing-backdrop {
+  position: absolute;
+  inset: -100%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    #0000 0,
+    #0000 20%,
+    #111111aa 50%
+  );
+  background-size: 3px 3px;
+  z-index: -1;
+}
+
+.pricing-spin {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+}
+
+.pricing-spin-blur {
+  filter: blur(3em) url(#unopaq);
+}
+
+.pricing-spin-intense {
+  inset: -0.125em;
+  filter: blur(0.5em) url(#unopaq2);
+  border-radius: 0;
+}
+
+.pricing-spin-inside {
+  inset: -2px;
+  border-radius: inherit;
+  filter: blur(2px) url(#unopaq3);
+  z-index: 0;
+}
+
+.pricing-spin::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  animation: pricing-speen 8s cubic-bezier(0.56, 0.15, 0.28, 0.86) infinite;
+}
+
+/* Card 1 - Orange/Blue Glow */
+.pricing-card-1-blur {
+  filter: blur(3em) url(#unopaq1);
+}
+
+.pricing-card-1-blur::before {
+  background: linear-gradient(-45deg, #f50, #0000 46% 54%, #05f);
+}
+
+.pricing-card-1-intense {
+  filter: blur(0.5em) url(#unopaq1-2);
+}
+
+.pricing-card-1-intense::before {
+  background: linear-gradient(-45deg, #f95, #0000 35% 65%, #59f);
+}
+
+.pricing-card-1-inside {
+  filter: blur(2px) url(#unopaq1-3);
+}
+
+.pricing-card-1-inside::before {
+  background: linear-gradient(-45deg, #fc9, #0000 35% 65%, #9cf);
+}
+
+/* Card 2 - Purple/Cyan Glow */
+.pricing-card-2-blur {
+  filter: blur(3em) url(#unopaq2);
+}
+
+.pricing-card-2-blur::before {
+  background: linear-gradient(-45deg, #a855f7, #0000 46% 54%, #06b6d4);
+}
+
+.pricing-card-2-intense {
+  filter: blur(0.5em) url(#unopaq2-2);
+}
+
+.pricing-card-2-intense::before {
+  background: linear-gradient(-45deg, #c084fc, #0000 35% 65%, #22d3ee);
+}
+
+.pricing-card-2-inside {
+  filter: blur(2px) url(#unopaq2-3);
+}
+
+.pricing-card-2-inside::before {
+  background: linear-gradient(-45deg, #e9d5ff, #0000 35% 65%, #67e8f9);
+}
+
+/* Card 3 - Green/Pink Glow */
+.pricing-card-3-blur {
+  filter: blur(3em) url(#unopaq3);
+}
+
+.pricing-card-3-blur::before {
+  background: linear-gradient(-45deg, #10b981, #0000 46% 54%, #ec4899);
+}
+
+.pricing-card-3-intense {
+  filter: blur(0.5em) url(#unopaq3-2);
+}
+
+.pricing-card-3-intense::before {
+  background: linear-gradient(-45deg, #34d399, #0000 35% 65%, #f472b6);
+}
+
+.pricing-card-3-inside {
+  filter: blur(2px) url(#unopaq3-3);
+}
+
+.pricing-card-3-inside::before {
+  background: linear-gradient(-45deg, #6ee7b7, #0000 35% 65%, #f9a8d4);
+}
+
+@keyframes pricing-speen {
+  0% {
+    rotate: 10deg;
+  }
+  50% {
+    rotate: 190deg;
+  }
+  to {
+    rotate: 370deg;
+  }
+}
+
+/* Featured card scale effect */
+.pricing-featured {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .pricing-featured {
+    transform: scale(1);
+  }
+  
+  .pricing-card-container {
+    max-width: 100%;
+    height: auto;
+    min-height: 480px;
+  }
+}
