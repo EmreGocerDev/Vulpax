@@ -85,42 +85,6 @@ export default function PricingSection() {
       </svg>
 
       <div className="container mx-auto px-4">
-        {/* Neden Biz Section */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Neden Biz?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto mb-20">
-            
-            {/* Card 1 - Hızlı & Optimize */}
-            <div className="why-card">
-              <div className="why-icon">⚡</div>
-              <h3 className="why-title">Hızlı & Optimize</h3>
-              <p className="why-description">Yıldırım hızında web siteleri ile kullanıcı deneyimini maksimuma çıkarıyoruz</p>
-            </div>
-
-            {/* Card 2 - Basit & Anlaşılır */}
-            <div className="why-card">
-              <div className="why-icon">🎨</div>
-              <h3 className="why-title">Basit & Anlaşılır</h3>
-              <p className="why-description">Sade ve etkili tasarımlar ile markanızı öne çıkarıyoruz</p>
-            </div>
-
-            {/* Card 3 - Responsive & Adaptif */}
-            <div className="why-card">
-              <div className="why-icon">📱</div>
-              <h3 className="why-title">Responsive & Adaptif</h3>
-              <p className="why-description">Her cihazda mükemmel görünüm ve kullanılabilirlik sağlıyoruz</p>
-            </div>
-
-            {/* Card 4 - Güvenli & Profesyonel */}
-            <div className="why-card">
-              <div className="why-icon">🛡️</div>
-              <h3 className="why-title">Güvenli & Profesyonel</h3>
-              <p className="why-description">Güncel güvenlik standartları ile verilerinizi koruyoruz</p>
-            </div>
-
-          </div>
-        </div>
-
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Fiyatlarımız</h2>
           <p className="text-lg text-gray-400">İşletmeniz için en uygun paketi seçin</p>
