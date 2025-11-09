@@ -50,6 +50,20 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
               Demolar
             </a>
             <a 
+              href="/referanslar" 
+              className="text-zinc-300 hover:text-white transition-colors py-2"
+              onClick={() => setIsOpen(false)}
+            >
+              Referanslar
+            </a>
+            <a 
+              href="#pricing" 
+              className="text-zinc-300 hover:text-white transition-colors py-2"
+              onClick={() => setIsOpen(false)}
+            >
+              Fiyatlar
+            </a>
+            <a 
               href="#contact" 
               className="text-zinc-300 hover:text-white transition-colors py-2"
               onClick={() => setIsOpen(false)}
@@ -63,14 +77,6 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
               onClick={() => setIsOpen(false)}
             >
               Uygulamalar
-            </a>
-
-            <a 
-              href="/referanslar" 
-              className="text-zinc-300 hover:text-white transition-colors py-2"
-              onClick={() => setIsOpen(false)}
-            >
-              Referanslar
             </a>
 
             {user && (

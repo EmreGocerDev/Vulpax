@@ -48,6 +48,12 @@ body {
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Smooth animations for all elements */
@@ -841,7 +847,7 @@ img {
   position: relative;
   width: 100%;
   max-width: 340px;
-  height: 480px;
+  height: 580px;
   border-radius: 0;
   margin: 0 auto;
 }
@@ -962,7 +968,10 @@ img {
 
 .pricing-backdrop {
   position: absolute;
-  inset: -100%;
+  top: -30%;
+  bottom: -30%;
+  left: -1000px;
+  right: -1000px;
   background: radial-gradient(
     circle at 50% 50%,
     #0000 0,
@@ -1104,6 +1113,152 @@ img {
   .pricing-card-container {
     max-width: 100%;
     height: auto;
-    min-height: 480px;
+    min-height: 580px;
   }
+}
+
+/* ===================================
+   WHY US CARDS - SIMPLE DESIGN
+   =================================== */
+
+.why-card {
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 0;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.why-card:hover {
+  border-color: #3f3f46;
+  transform: translateY(-4px);
+}
+
+.why-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.why-title {
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.why-description {
+  color: #a1a1aa;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* ===================================
+   TECH SLIDER - INFINITE SCROLL
+   =================================== */
+
+.tech-slider-section {
+  background: #000000;
+  padding: 4rem 0;
+  overflow: hidden;
+  border-top: 1px solid #27272a;
+}
+
+.tech-slider-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.tech-slider-track {
+  display: flex;
+  width: fit-content;
+  animation: scroll 40s linear infinite;
+  gap: 4rem;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.tech-slider-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+  transition: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.tech-icon {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  filter: none;
+}
+
+.tech-name {
+  color: #d4d4d8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.025em;
+}
+
+.tech-tooltip {
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #18181b;
+  border: 2px solid #27272a;
+  border-radius: 0;
+  padding: 1.25rem;
+  min-width: 280px;
+  max-width: 320px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 100;
+  pointer-events: none;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.tech-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #18181b;
+}
+
+.tech-slider-item:hover .tech-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.tech-tooltip-title {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.025em;
+}
+
+.tech-tooltip-description {
+  color: #a1a1aa;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  margin: 0;
 }

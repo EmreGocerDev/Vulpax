@@ -12,6 +12,7 @@ import ReferencesSlider from "./components/ReferencesSlider";
 import ContactForm from "./components/ContactForm";
 import DemoPages from "./components/DemoPages";
 import PricingSection from "./components/PricingSection";
+import TechSlider from "./components/TechSlider";
 import { useAuth } from "./hooks/useAuth";
 
 export default function Home() {
@@ -45,6 +46,7 @@ export default function Home() {
             <nav className="hidden md:flex items-center space-x-8">
               <a href="/demolar" className="text-zinc-300 hover:text-white transition-colors">Demolar</a>
               <a href="/referanslar" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
+              <a href="#pricing" className="text-zinc-300 hover:text-white transition-colors">Fiyatlar</a>
               <a href="#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
               <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
               {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
@@ -108,6 +110,9 @@ export default function Home() {
           <ContactForm isOpen={true} onClose={() => {}} />
         </div>
       </section>
+
+      {/* Tech Slider */}
+      <TechSlider />
 
       {/* Footer */}
       <footer className="border-t border-zinc-800 py-12 px-6 animate-fade-in">
@@ -174,6 +179,7 @@ export default function Home() {
           setResetEmail("");
         }}
       />
+
     </div>
   );
 }
