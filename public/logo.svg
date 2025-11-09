@@ -1,0 +1,14 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black background -->
+  <rect width="512" height="512" fill="#000000"/>
+  
+  <!-- Red accent -->
+  <circle cx="256" cy="256" r="200" fill="#000000" stroke="#DC2626" stroke-width="8"/>
+  
+  <!-- VULPAX text -->
+  <text x="256" y="240" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#FFFFFF" text-anchor="middle">VULPA</text>
+  <text x="256" y="300" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#DC2626" text-anchor="middle">X</text>
+  
+  <!-- Small tagline -->
+  <text x="256" y="340" font-family="Arial, sans-serif" font-size="20" fill="#9CA3AF" text-anchor="middle">SOFTWARE</text>
+</svg>
