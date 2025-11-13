@@ -89,6 +89,7 @@ export default function DemosAdminPage() {
 
       const { error } = await supabase
         .from('demos')
+        // @ts-ignore
         .insert({
           title,
           description,
@@ -125,6 +126,7 @@ export default function DemosAdminPage() {
   const toggleActive = async (id: string, currentStatus: boolean) => {
     await supabase
       .from('demos')
+      // @ts-ignore
       .update({ is_active: !currentStatus })
       .eq('id', id);
 

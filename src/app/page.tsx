@@ -13,6 +13,7 @@ import ContactForm from "./components/ContactForm";
 import DemoPages from "./components/DemoPages";
 import PricingSection from "./components/PricingSection";
 import TechSlider from "./components/TechSlider";
+import MusicPreview from "./components/MusicPreview";
 import { useAuth } from "./hooks/useAuth";
 
 export default function Home() {
@@ -46,6 +47,7 @@ export default function Home() {
             <nav className="hidden md:flex items-center space-x-8">
               <a href="/demolar" className="text-zinc-300 hover:text-white transition-colors text-base">Demolar</a>
               <a href="/referanslar" className="text-zinc-300 hover:text-white transition-colors text-base">Referanslar</a>
+              <a href="/muzik-kutuphanesi" className="text-zinc-300 hover:text-white transition-colors text-base">Müzik</a>
               <a href="#pricing" className="text-zinc-300 hover:text-white transition-colors text-base">Fiyatlar</a>
               <a href="#contact" className="text-zinc-300 hover:text-white transition-colors text-base">İletişim</a>
               <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors text-base">Ücretsiz Uygulamalar</a>
@@ -91,6 +93,9 @@ export default function Home() {
 
       {/* Demo Pages Section - From DEMOS table */}
       <DemoPages />
+
+      {/* Music Preview Section */}
+      <MusicPreview />
 
       {/* References Section */}
       <ReferencesSlider />

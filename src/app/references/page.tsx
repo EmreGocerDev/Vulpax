@@ -57,15 +57,17 @@ export default function ReferencesPage() {
       const { data: imagesData, error: imagesError } = await supabase
         .from('reference_images')
         .select('*')
+        // @ts-ignore
         .in('reference_id', refsData.map(r => r.id))
         .order('display_order', { ascending: true });
 
       if (imagesError) throw imagesError;
 
       // Combine data
-      const referencesWithImages = refsData.map(ref => ({
+      // @ts-ignore
+      const referencesWithImages = refsData.map((ref: any) => ({
         ...ref,
-        images: imagesData?.filter(img => img.reference_id === ref.id) || []
+        images: imagesData?.filter((img: any) => img.reference_id === ref.id) || []
       }));
 
       setReferences(referencesWithImages);

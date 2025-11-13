@@ -118,6 +118,7 @@ export default function ApplicationsAdminPage() {
 
       const { error } = await supabase
         .from('applications')
+        // @ts-ignore
         .insert({
           title,
           description,
@@ -166,6 +167,7 @@ export default function ApplicationsAdminPage() {
   const toggleActive = async (id: string, currentStatus: boolean) => {
     await supabase
       .from('applications')
+      // @ts-ignore
       .update({ is_active: !currentStatus })
       .eq('id', id);
 

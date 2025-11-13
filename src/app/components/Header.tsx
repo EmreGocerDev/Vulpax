@@ -55,6 +55,14 @@ export default function Header({ user, onSignOut, onLoginClick }: HeaderProps) {
             >
               REFERANSLAR
             </Link>
+            <Link 
+              href="/muzik-kutuphanesi" 
+              className={`text-base font-semibold transition-colors uppercase tracking-wide ${
+                isActive('/muzik-kutuphanesi') ? 'text-white' : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              MÜZİK
+            </Link>
             {user ? (
               <UserMenu user={user} onSignOut={onSignOut} />
             ) : (

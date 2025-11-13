@@ -79,15 +79,13 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
               Uygulamalar
             </a>
 
-            {user && (
-              <a 
-                href="/uygulamalar" 
-                className="text-zinc-300 hover:text-white transition-colors py-2"
-                onClick={() => setIsOpen(false)}
-              >
-                Uygulamalar
-              </a>
-            )}
+            <a 
+              href="/muzik-kutuphanesi" 
+              className="text-zinc-300 hover:text-white transition-colors py-2"
+              onClick={() => setIsOpen(false)}
+            >
+              Müzik Kütüphanesi
+            </a>
             {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
               <a 
                 href="/admin" 
