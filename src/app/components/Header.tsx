@@ -22,10 +22,10 @@ export default function Header({ user, onSignOut, onLoginClick }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-black border-b border-zinc-800">
-      <div className="max-w-7xl mx-auto px-6 py-4">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-zinc-800">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-2xl font-bold text-red-600 hover:text-red-500 transition-colors uppercase tracking-wide">
+          <Link href="/" className="text-3xl font-bold text-red-600 hover:text-red-500 transition-colors uppercase tracking-wide">
             VULPAX
           </Link>
           
@@ -33,7 +33,7 @@ export default function Header({ user, onSignOut, onLoginClick }: HeaderProps) {
           <nav className="hidden md:flex items-center gap-8">
             <Link 
               href="/" 
-              className={`text-sm font-semibold transition-colors uppercase tracking-wide ${
+              className={`text-base font-semibold transition-colors uppercase tracking-wide ${
                 isActive('/') && pathname === '/' ? 'text-white' : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -41,7 +41,7 @@ export default function Header({ user, onSignOut, onLoginClick }: HeaderProps) {
             </Link>
             <Link 
               href="/uygulamalar" 
-              className={`text-sm font-semibold transition-colors uppercase tracking-wide ${
+              className={`text-base font-semibold transition-colors uppercase tracking-wide ${
                 isActive('/uygulamalar') ? 'text-white' : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -49,7 +49,7 @@ export default function Header({ user, onSignOut, onLoginClick }: HeaderProps) {
             </Link>
             <Link 
               href="/references" 
-              className={`text-sm font-semibold transition-colors uppercase tracking-wide ${
+              className={`text-base font-semibold transition-colors uppercase tracking-wide ${
                 isActive('/references') ? 'text-white' : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -60,7 +60,7 @@ export default function Header({ user, onSignOut, onLoginClick }: HeaderProps) {
             ) : (
               <button 
                 onClick={onLoginClick}
-                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-semibold uppercase tracking-wide"
+                className="px-6 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-base font-semibold uppercase tracking-wide"
               >
                 GİRİŞ YAP
               </button>

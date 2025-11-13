@@ -25,30 +25,30 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50 animate-fade-in-down">
+      <header className="border-b border-white/10 fixed top-0 left-0 right-0 backdrop-blur-xl bg-black/30 z-50 animate-fade-in-down">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Image
                 src="/logo2.png"
                 alt="Vulpax Digital"
-                width={40}
-                height={40}
+                width={56}
+                height={56}
                 className="rounded-lg"
               />
               <div>
-                <h1 className="text-xl font-bold text-white logo-font">
+                <h1 className="text-2xl font-bold text-white logo-font">
                   VULPA<span className="text-red-500">X</span>
                 </h1>
-                <p className="text-xs text-zinc-400">DIGITAL</p>
+                <p className="text-sm text-zinc-400">DIGITAL</p>
               </div>
             </div>
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="/demolar" className="text-zinc-300 hover:text-white transition-colors">Demolar</a>
-              <a href="/referanslar" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
-              <a href="#pricing" className="text-zinc-300 hover:text-white transition-colors">Fiyatlar</a>
-              <a href="#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
-              <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
+              <a href="/demolar" className="text-zinc-300 hover:text-white transition-colors text-base">Demolar</a>
+              <a href="/referanslar" className="text-zinc-300 hover:text-white transition-colors text-base">Referanslar</a>
+              <a href="#pricing" className="text-zinc-300 hover:text-white transition-colors text-base">Fiyatlar</a>
+              <a href="#contact" className="text-zinc-300 hover:text-white transition-colors text-base">İletişim</a>
+              <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors text-base">Ücretsiz Uygulamalar</a>
               {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
                 <a href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,9 +79,9 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative min-h-[700px] md:min-h-[800px] overflow-hidden bg-black">
+      <section className="relative min-h-[700px] md:min-h-[800px] overflow-hidden bg-black pt-[72px]">
         {/* Background Slider */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 top-[72px]">
           <HeroSlider />
         </div>
       </section>
