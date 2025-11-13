@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Download } from 'lucide-react';
 
 interface Music {
   id: string;
@@ -111,6 +111,15 @@ export default function MusicPlayerCard({ music, isPlaying, onPlay, onPause }: M
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = music.file_url;
+    link.download = `${music.artist} - ${music.title}.mp3`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="backdrop-blur-md bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 group overflow-hidden">
       {/* Cover Image */}
@@ -140,8 +149,19 @@ export default function MusicPlayerCard({ music, isPlaying, onPlay, onPause }: M
 
       {/* Music Info */}
       <div className="p-4 mb-4">
-        <h3 className="text-lg font-bold text-white truncate mb-1 group-hover:text-purple-400 transition-colors">{music.title}</h3>
-        <p className="text-sm text-zinc-400 truncate mb-2">{music.artist}</p>
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-bold text-white truncate mb-1 group-hover:text-purple-400 transition-colors">{music.title}</h3>
+            <p className="text-sm text-zinc-400 truncate">{music.artist}</p>
+          </div>
+          <button
+            onClick={handleDownload}
+            className="shrink-0 bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40"
+            title="İndir"
+          >
+            <Download className="w-4 h-4" />
+          </button>
+        </div>
         {music.genre && (
           <span className="inline-block px-2 py-1 text-xs backdrop-blur-md bg-white/10 border border-white/20 text-white rounded-full">
             {music.genre}

@@ -13,7 +13,6 @@ import ContactForm from "./components/ContactForm";
 import DemoPages from "./components/DemoPages";
 import PricingSection from "./components/PricingSection";
 import TechSlider from "./components/TechSlider";
-import MusicPreview from "./components/MusicPreview";
 import { useAuth } from "./hooks/useAuth";
 
 export default function Home() {
@@ -93,9 +92,6 @@ export default function Home() {
 
       {/* Demo Pages Section - From DEMOS table */}
       <DemoPages />
-
-      {/* Music Preview Section */}
-      <MusicPreview />
 
       {/* References Section */}
       <ReferencesSlider />
