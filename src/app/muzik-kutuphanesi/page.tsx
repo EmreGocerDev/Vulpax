@@ -371,9 +371,6 @@ export default function MusicLibraryPage() {
           </p>
         </div>
       </div>
-
-      {/* Footer */}
-      <Footer />
       </div>
     </div>
   );

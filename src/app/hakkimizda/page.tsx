@@ -1,41 +1,8 @@
-'use client';
-
-import Image from "next/image";
 import Link from "next/link";
-import Footer from "../components/Footer";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-4">
-              <Image
-                src="/logo2.png"
-                alt="Vulpax Digital"
-                width={48}
-                height={48}
-                className="rounded-lg"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-white logo-font">
-                  VULPA<span className="text-red-500">X</span>
-                </h1>
-                <p className="text-xs text-zinc-400">DIGITAL</p>
-              </div>
-            </Link>
-            <Link
-              href="/"
-              className="text-zinc-300 hover:text-white transition-colors text-sm"
-            >
-              Ana Sayfa
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <div className="pt-24">
       {/* Hero Section */}
       <div className="relative py-20 px-6 bg-gradient-to-b from-zinc-900 to-black">
         <div className="max-w-4xl mx-auto text-center">
@@ -214,8 +181,6 @@ export default function AboutPage() {
           </section>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

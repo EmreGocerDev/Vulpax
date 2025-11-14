@@ -334,9 +334,6 @@ export default function ApplicationsPage() {
           )}
         </div>
       </section>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

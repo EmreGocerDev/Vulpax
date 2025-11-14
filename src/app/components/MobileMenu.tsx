@@ -40,8 +40,16 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 bg-zinc-900 border-t border-zinc-800 z-40">
-          <div className="flex flex-col p-6 space-y-4">
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            onClick={() => setIsOpen(false)}
+          ></div>
+          
+          {/* Menu Panel */}
+          <div className="fixed top-[73px] left-0 right-0 backdrop-blur-xl bg-black/80 border-t border-white/10 z-50 shadow-2xl animate-fade-in-down">
+            <div className="flex flex-col p-6 space-y-4 max-h-[calc(100vh-73px)] overflow-y-auto">
             <a 
               href="/demolar" 
               className="text-zinc-300 hover:text-white transition-colors py-2"
@@ -157,6 +165,7 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
             )}
           </div>
         </div>
+        </>
       )}
     </div>
   );

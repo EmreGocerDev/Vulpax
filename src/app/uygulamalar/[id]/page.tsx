@@ -789,9 +789,6 @@ export default function ApplicationDetailPage() {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
