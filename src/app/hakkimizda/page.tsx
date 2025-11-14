@@ -4,18 +4,20 @@ import Image from "next/image";
 export default function AboutPage() {
   return (
     <div className="pt-24">
+      {/* Fixed Character Image - Desktop only */}
+      <div className="hidden md:block fixed bottom-8 right-8 z-40 pointer-events-none">
+        <Image
+          src="/KarakterGorsellleri/hakkimizda..png"
+          alt="Vulpax Professional"
+          width={280}
+          height={280}
+          className="animate-fade-in drop-shadow-2xl"
+        />
+      </div>
+      
       {/* Hero Section */}
       <div className="relative py-20 px-6 bg-gradient-to-b from-zinc-900 to-black">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="flex justify-center mb-8">
-            <Image
-              src="/KarakterGorsellleri/hakkimizda..png"
-              alt="Vulpax Professional"
-              width={200}
-              height={200}
-              className="animate-fade-in"
-            />
-          </div>
           <h1 className="text-5xl font-bold mb-6 logo-font">
             VULPA<span className="text-red-500">X</span> DIGITAL
           </h1>
@@ -189,6 +191,17 @@ export default function AboutPage() {
               İletişime Geçin
             </Link>
           </section>
+        </div>
+        
+        {/* Mobile Character Image */}
+        <div className="md:hidden flex justify-center mt-12">
+          <Image
+            src="/KarakterGorsellleri/hakkimizda..png"
+            alt="Vulpax Professional"
+            width={280}
+            height={280}
+            className="animate-fade-in drop-shadow-2xl"
+          />
         </div>
       </div>
     </div>

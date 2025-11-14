@@ -158,16 +158,18 @@ export default function ReferanslarPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-12">
+        {/* Fixed Character Image - Desktop only */}
+        <div className="hidden md:block fixed bottom-8 right-8 z-40 pointer-events-none">
+          <Image
+            src="/KarakterGorsellleri/satis.png"
+            alt="Referanslar"
+            width={280}
+            height={280}
+            className="animate-fade-in drop-shadow-2xl"
+          />
+        </div>
+        
         <div className="text-center mb-12 animate-fade-in-up">
-          <div className="flex justify-center mb-6">
-            <Image
-              src="/KarakterGorsellleri/satis.png"
-              alt="Referanslar"
-              width={200}
-              height={200}
-              className="animate-fade-in"
-            />
-          </div>
           <h1 className="text-5xl font-bold mb-4">TÜM REFERANSLARIMIZ</h1>
           <p className="text-zinc-400 text-lg">
             Birlikte çalıştığımız başarılı projeler ve iş ortaklıkları
@@ -314,6 +316,18 @@ export default function ReferanslarPage() {
           </div>
         </div>
       )}
+      
+      {/* Mobile Character Image */}
+      <div className="md:hidden flex justify-center mt-12 mb-12">
+        <Image
+          src="/KarakterGorsellleri/satis.png"
+          alt="Referanslar"
+          width={280}
+          height={280}
+          className="animate-fade-in drop-shadow-2xl"
+        />
+      </div>
+    </main>
     </div>
   );
 }

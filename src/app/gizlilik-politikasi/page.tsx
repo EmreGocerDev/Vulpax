@@ -3,17 +3,19 @@ import Image from "next/image";
 export default function PrivacyPolicyPage() {
   return (
     <div className="pt-24">
+      {/* Fixed Character Image - Desktop only */}
+      <div className="hidden md:block fixed bottom-8 right-8 z-40 pointer-events-none">
+        <Image
+          src="/KarakterGorsellleri/guvenlik.png"
+          alt="Güvenlik"
+          width={280}
+          height={280}
+          className="animate-fade-in drop-shadow-2xl"
+        />
+      </div>
+      
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-16">
-        <div className="flex justify-center mb-8">
-          <Image
-            src="/KarakterGorsellleri/guvenlik.png"
-            alt="Güvenlik"
-            width={200}
-            height={200}
-            className="animate-fade-in"
-          />
-        </div>
         <h1 className="text-4xl font-bold mb-8 text-center">Gizlilik Politikası</h1>
         
         <div className="space-y-8 text-zinc-300 leading-relaxed">
@@ -133,6 +135,17 @@ export default function PrivacyPolicyPage() {
               Son güncelleme: 14 Kasım 2025
             </p>
           </section>
+        </div>
+        
+        {/* Mobile Character Image */}
+        <div className="md:hidden flex justify-center mt-12">
+          <Image
+            src="/KarakterGorsellleri/guvenlik.png"
+            alt="Güvenlik"
+            width={280}
+            height={280}
+            className="animate-fade-in drop-shadow-2xl"
+          />
         </div>
       </div>
     </div>

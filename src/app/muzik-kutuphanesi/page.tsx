@@ -300,18 +300,20 @@ export default function MusicLibraryPage() {
       />
 
       <div className="pt-32 pb-20 bg-linear-to-b from-black via-zinc-900 to-black">
+      {/* Fixed Character Image - Desktop only */}
+      <div className="hidden md:block fixed bottom-8 right-8 z-40 pointer-events-none">
+        <Image
+          src="/KarakterGorsellleri/MusicVulpax.png"
+          alt="Müzik"
+          width={280}
+          height={280}
+          className="animate-fade-in drop-shadow-2xl"
+        />
+      </div>
+      
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in-up">
-          <div className="flex justify-center mb-6">
-            <Image
-              src="/KarakterGorsellleri/MusicVulpax.png"
-              alt="Müzik"
-              width={180}
-              height={180}
-              className="animate-fade-in"
-            />
-          </div>
           <h1 className="text-5xl md:text-6xl font-black mb-4 logo-font">
             <span className="bg-linear-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
               Müzik Kütüphanesi
@@ -380,6 +382,17 @@ export default function MusicLibraryPage() {
             )}
           </p>
         </div>
+      </div>
+      
+      {/* Mobile Character Image */}
+      <div className="md:hidden flex justify-center mt-12">
+        <Image
+          src="/KarakterGorsellleri/MusicVulpax.png"
+          alt="Müzik"
+          width={280}
+          height={280}
+          className="animate-fade-in drop-shadow-2xl"
+        />
       </div>
       </div>
     </div>

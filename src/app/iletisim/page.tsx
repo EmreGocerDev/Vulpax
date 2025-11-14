@@ -67,18 +67,20 @@ export default function ContactPage() {
 
   return (
     <div className="pt-24">
+      {/* Fixed Character Image - Desktop only */}
+      <div className="hidden md:block fixed bottom-8 right-8 z-40 pointer-events-none">
+        <Image
+          src="/KarakterGorsellleri/iletisimVulpax.png"
+          alt="İletişim"
+          width={280}
+          height={280}
+          className="animate-fade-in drop-shadow-2xl"
+        />
+      </div>
+      
       {/* Content */}
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
-          <div className="flex justify-center mb-6">
-            <Image
-              src="/KarakterGorsellleri/iletisimVulpax.png"
-              alt="İletişim"
-              width={180}
-              height={180}
-              className="animate-fade-in"
-            />
-          </div>
           <h1 className="text-4xl font-bold mb-4">İletişim</h1>
           <p className="text-xl text-zinc-300">
             Projeleriniz için bizimle iletişime geçin
@@ -259,6 +261,17 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Mobile Character Image */}
+        <div className="md:hidden flex justify-center mt-12">
+          <Image
+            src="/KarakterGorsellleri/iletisimVulpax.png"
+            alt="İletişim"
+            width={280}
+            height={280}
+            className="animate-fade-in drop-shadow-2xl"
+          />
         </div>
       </div>
     </div>
