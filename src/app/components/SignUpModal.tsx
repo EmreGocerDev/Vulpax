@@ -16,6 +16,7 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToLogin }: SignUp
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [acceptedPrivacyPolicy, setAcceptedPrivacyPolicy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -40,6 +41,12 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToLogin }: SignUp
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    
+    if (!acceptedPrivacyPolicy) {
+      setError("Gizlilik Politikası'nı kabul etmelisiniz!");
+      setIsLoading(false);
+      return;
+    }
     
     if (password !== confirmPassword) {
       setError("Şifreler eşleşmiyor!");
@@ -73,6 +80,7 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToLogin }: SignUp
         setPassword("");
         setConfirmPassword("");
         setFullName("");
+        setAcceptedPrivacyPolicy(false);
         setMessage(null);
       }, 2000);
     } catch (error: any) {
@@ -223,6 +231,27 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToLogin }: SignUp
                 className="w-full px-4 py-3 bg-zinc-800 border border-zinc-600 text-white placeholder-zinc-400 focus:border-zinc-400 focus:outline-none transition-colors"
                 placeholder="••••••••"
               />
+            </div>
+
+            <div className="flex items-start gap-3 mb-4">
+              <input
+                type="checkbox"
+                id="privacy-policy"
+                checked={acceptedPrivacyPolicy}
+                onChange={(e) => setAcceptedPrivacyPolicy(e.target.checked)}
+                required
+                className="mt-1 w-4 h-4 bg-zinc-800 border border-zinc-600 text-red-500 focus:ring-red-500 focus:ring-2"
+              />
+              <label htmlFor="privacy-policy" className="text-sm text-zinc-300">
+                <a href="/gizlilik-politikasi" target="_blank" className="text-red-400 hover:text-red-300 underline">
+                  Gizlilik Politikası
+                </a>
+                'nı ve{' '}
+                <a href="/mesafeli-satis-sozlesmesi" target="_blank" className="text-red-400 hover:text-red-300 underline">
+                  Mesafeli Satış Sözleşmesi
+                </a>
+                'ni okudum, kabul ediyorum.
+              </label>
             </div>
 
             <div className="button-borders w-full">

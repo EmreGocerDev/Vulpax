@@ -13,6 +13,7 @@ import ContactForm from "./components/ContactForm";
 import DemoPages from "./components/DemoPages";
 import PricingSection from "./components/PricingSection";
 import TechSlider from "./components/TechSlider";
+import Footer from "./components/Footer";
 import { useAuth } from "./hooks/useAuth";
 
 export default function Home() {
@@ -116,30 +117,7 @@ export default function Home() {
       <TechSlider />
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 py-12 px-6 animate-fade-in">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-4 mb-4 md:mb-0">
-              <Image
-                src="/logo2.png"
-                alt="Vulpax Digital"
-                width={32}
-                height={32}
-                className="rounded-lg"
-              />
-              <div>
-                <p className="font-semibold logo-font">VULPA<span className="text-red-500">X</span> DIGITAL</p>
-                <p className="text-sm text-zinc-400">© 2025 Tüm hakları saklıdır.</p>
-              </div>
-            </div>
-            <div className="flex space-x-6 text-sm text-zinc-400">
-              <a href="#" className="hover:text-white transition-colors">Gizlilik Politikası</a>
-              <a href="#" className="hover:text-white transition-colors">Kullanım Şartları</a>
-              <a href="#" className="hover:text-white transition-colors">Destek</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Login Modal */}
       <LoginModal 

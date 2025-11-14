@@ -9,6 +9,7 @@ import UserMenu from "../../components/UserMenu";
 import MobileMenu from "../../components/MobileMenu";
 import LoginModal from "../../components/LoginModal";
 import SignUpModal from "../../components/SignUpModal";
+import Footer from "../../components/Footer";
 import { supabase } from "@/lib/supabase";
 
 interface Category {
@@ -790,11 +791,7 @@ export default function ApplicationDetailPage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800 py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-6 text-center text-zinc-500 text-sm">
-          <p>&copy; 2025 Vulpax Software. Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

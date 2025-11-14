@@ -9,6 +9,7 @@ import SignUpModal from '../components/SignUpModal';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import UserMenu from '../components/UserMenu';
 import MusicPlayerCard from '@/app/components/MusicPlayerCard';
+import Footer from '../components/Footer';
 
 interface Music {
   id: string;
@@ -370,6 +371,9 @@ export default function MusicLibraryPage() {
           </p>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '../hooks/useAuth';
 import UserMenu from '../components/UserMenu';
 import MobileMenu from '../components/MobileMenu';
+import Footer from '../components/Footer';
 
 interface ReferenceImage {
   id: string;
@@ -305,6 +306,9 @@ export default function ReferanslarPage() {
           </div>
         </div>
       )}
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
