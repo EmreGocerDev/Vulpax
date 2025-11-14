@@ -47,6 +47,9 @@ export default function Header() {
               <Link href="/muzik-kutuphanesi" className="text-zinc-300 hover:text-white transition-colors text-base">
                 Müzik
               </Link>
+              <Link href="/forum" className="text-zinc-300 hover:text-white transition-colors text-base">
+                Forum
+              </Link>
               <Link href="/#pricing" className="text-zinc-300 hover:text-white transition-colors text-base">
                 Fiyatlar
               </Link>

@@ -65,6 +65,13 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
               Referanslar
             </a>
             <a 
+              href="/forum" 
+              className="text-zinc-300 hover:text-white transition-colors py-2"
+              onClick={() => setIsOpen(false)}
+            >
+              Forum
+            </a>
+            <a 
               href="#pricing" 
               className="text-zinc-300 hover:text-white transition-colors py-2"
               onClick={() => setIsOpen(false)}
