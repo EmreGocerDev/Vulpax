@@ -1,9 +1,20 @@
+import Image from "next/image";
+
 export default function PrivacyPolicyPage() {
   return (
     <div className="pt-24">
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-16">
-        <h1 className="text-4xl font-bold mb-8">Gizlilik Politikası</h1>
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/KarakterGorsellleri/guvenlik.png"
+            alt="Güvenlik"
+            width={200}
+            height={200}
+            className="animate-fade-in"
+          />
+        </div>
+        <h1 className="text-4xl font-bold mb-8 text-center">Gizlilik Politikası</h1>
         
         <div className="space-y-8 text-zinc-300 leading-relaxed">
           <section>

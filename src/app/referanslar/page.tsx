@@ -159,6 +159,15 @@ export default function ReferanslarPage() {
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="text-center mb-12 animate-fade-in-up">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/KarakterGorsellleri/satis.png"
+              alt="Referanslar"
+              width={200}
+              height={200}
+              className="animate-fade-in"
+            />
+          </div>
           <h1 className="text-5xl font-bold mb-4">TÜM REFERANSLARIMIZ</h1>
           <p className="text-zinc-400 text-lg">
             Birlikte çalıştığımız başarılı projeler ve iş ortaklıkları

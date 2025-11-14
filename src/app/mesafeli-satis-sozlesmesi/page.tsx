@@ -1,9 +1,20 @@
+import Image from "next/image";
+
 export default function DistanceSalesAgreementPage() {
   return (
     <div className="pt-24">
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-16">
-        <h1 className="text-4xl font-bold mb-8">Mesafeli Satış Sözleşmesi</h1>
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/KarakterGorsellleri/satis.png"
+            alt="Satış Sözleşmesi"
+            width={200}
+            height={200}
+            className="animate-fade-in"
+          />
+        </div>
+        <h1 className="text-4xl font-bold mb-8 text-center">Mesafeli Satış Sözleşmesi</h1>
         
         <div className="space-y-8 text-zinc-300 leading-relaxed">
           

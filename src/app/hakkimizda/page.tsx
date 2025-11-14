@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -6,6 +7,15 @@ export default function AboutPage() {
       {/* Hero Section */}
       <div className="relative py-20 px-6 bg-gradient-to-b from-zinc-900 to-black">
         <div className="max-w-4xl mx-auto text-center">
+          <div className="flex justify-center mb-8">
+            <Image
+              src="/KarakterGorsellleri/hakkimizda..png"
+              alt="Vulpax Professional"
+              width={200}
+              height={200}
+              className="animate-fade-in"
+            />
+          </div>
           <h1 className="text-5xl font-bold mb-6 logo-font">
             VULPA<span className="text-red-500">X</span> DIGITAL
           </h1>

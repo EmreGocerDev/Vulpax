@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import Image from "next/image";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -69,6 +70,15 @@ export default function ContactPage() {
       {/* Content */}
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/KarakterGorsellleri/iletisimVulpax.png"
+              alt="İletişim"
+              width={180}
+              height={180}
+              className="animate-fade-in"
+            />
+          </div>
           <h1 className="text-4xl font-bold mb-4">İletişim</h1>
           <p className="text-xl text-zinc-300">
             Projeleriniz için bizimle iletişime geçin
