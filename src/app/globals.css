@@ -405,6 +405,17 @@ img {
   }
 }
 
+@keyframes slide-in-top {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
 /* Utility Animation Classes */
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
@@ -448,6 +459,14 @@ img {
 
 .animate-slide-in-down {
   animation: slideInDown 0.6s ease-out forwards;
+}
+
+.animate-download {
+  animation: slide-in-top 1s linear infinite;
+}
+
+.group\/btn:hover .download-icon {
+  animation: slide-in-top 1s linear infinite;
 }
 
 /* Delay Classes */

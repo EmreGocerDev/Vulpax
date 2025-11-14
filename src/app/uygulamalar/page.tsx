@@ -127,7 +127,7 @@ export default function ApplicationsPage() {
               />
               <div>
                 <h1 className="text-xl font-bold text-white logo-font">
-                  VULPA<span className="text-red-500">X</span>
+                  VULPAX<span className="text-red-500">X</span>
                 </h1>
                 <p className="text-xs text-zinc-400">DIGITAL</p>
               </div>
@@ -337,7 +337,7 @@ export default function ApplicationsPage() {
       {/* Footer */}
       <footer className="border-t border-zinc-800 py-8">
         <div className="max-w-7xl mx-auto px-6 text-center text-zinc-500 text-sm">
-          <p>&copy; 2025 Vulpax Software. Tüm hakları saklıdır.</p>
+          <p>&copy; 2025 Vulpax Digital. Tüm hakları saklıdır.</p>
         </div>
       </footer>
     </div>

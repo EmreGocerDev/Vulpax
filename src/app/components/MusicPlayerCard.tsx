@@ -156,10 +156,18 @@ export default function MusicPlayerCard({ music, isPlaying, onPlay, onPause }: M
           </div>
           <button
             onClick={handleDownload}
-            className="shrink-0 bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40"
+            className="shrink-0 w-[50px] h-[50px] border-2 border-zinc-700 bg-zinc-900 hover:bg-white flex flex-col items-center justify-center cursor-pointer relative transition-all duration-300 shadow-lg group/btn"
             title="İndir"
           >
-            <Download className="w-4 h-4" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="1em"
+              viewBox="0 0 384 512"
+              className="fill-zinc-300 group-hover/btn:fill-zinc-900 transition-colors download-icon"
+            >
+              <path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"></path>
+            </svg>
+            <span className="w-[18px] h-[5px] border-b-2 border-l-2 border-r-2 border-zinc-300 group-hover/btn:border-zinc-900 transition-colors"></span>
           </button>
         </div>
         {music.genre && (
