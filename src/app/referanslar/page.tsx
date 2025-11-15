@@ -242,7 +242,6 @@ export default function ReferanslarPage() {
             ))}
           </div>
         )}
-      </main>
 
       {/* Lightbox Modal */}
       {selectedRef && selectedRef.images && selectedRef.images.length > 0 && (
@@ -327,7 +326,7 @@ export default function ReferanslarPage() {
           className="animate-fade-in drop-shadow-2xl"
         />
       </div>
-    </main>
+      </main>
     </div>
   );
 }
