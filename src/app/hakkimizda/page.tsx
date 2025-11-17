@@ -16,7 +16,7 @@ export default function AboutPage() {
       </div>
       
       {/* Hero Section */}
-      <div className="relative py-20 px-6 bg-gradient-to-b from-zinc-900 to-black">
+      <div className="relative py-20 px-6 bg-linear-to-b from-zinc-900 to-black">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl font-bold mb-6 logo-font">
             VULPA<span className="text-red-500">X</span> DIGITAL

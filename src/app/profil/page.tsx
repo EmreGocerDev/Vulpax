@@ -27,6 +27,20 @@ export default function ProfilPage() {
   const [loadingCards, setLoadingCards] = useState(false);
   const [showAddCard, setShowAddCard] = useState(false);
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
+  // Edit mode & profile fields
+  const [isEditing, setIsEditing] = useState(false);
+  const [brand, setBrand] = useState<string>(user?.user_metadata?.brand || '');
+  const [address, setAddress] = useState<string>(user?.user_metadata?.address || '');
+  const [billingAddress, setBillingAddress] = useState<string>(user?.user_metadata?.billing_address || '');
+  const [contactPhone, setContactPhone] = useState<string>(user?.user_metadata?.contact_phone || '');
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  // Password change
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
   
   // Yeni kart form state'leri
   const [newCard, setNewCard] = useState({
@@ -82,6 +96,164 @@ export default function ProfilPage() {
       console.error('Kartlar yüklenirken hata:', error);
     } finally {
       setLoadingCards(false);
+    }
+  };
+
+  // Resize image to max dimension and return a blob (JPEG)
+  const resizeImageToBlob = (file: File, maxSize = 800): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      // Use the global Image constructor via window to avoid name collision
+      // with the imported `Image` component from 'next/image'.
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > height) {
+          if (width > maxSize) {
+            height = Math.round((height *= maxSize / width));
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = Math.round((width *= maxSize / height));
+            height = maxSize;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Canvas context not available'));
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error('Canvas toBlob failed'));
+        }, 'image/jpeg', 0.85);
+      };
+      img.onerror = (e) => reject(e);
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        img.src = ev.target?.result as string;
+      };
+      reader.onerror = (e) => reject(e);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleAvatarSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    try {
+      setAvatarUploading(true);
+      const blob = await resizeImageToBlob(file, 800);
+      const ext = (file.name.split('.').pop() || 'jpg').split('?')[0];
+      const filename = `avatars/${user.id}-${Date.now()}.${ext}`;
+      const supabase: any = createClient();
+
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(filename, blob, { upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { data: publicData } = supabase.storage.from('avatars').getPublicUrl(filename);
+      const publicUrl = publicData?.publicUrl || '';
+
+      // Update user metadata with new avatar URL (and avatar path)
+      const { data, error } = await supabase.auth.updateUser({ data: { ...(user.user_metadata || {}), avatar_url: publicUrl, avatar_path: filename } });
+      if (error) throw error;
+
+      // Also update existing comments so avatars update everywhere
+      await supabase.from('comments').update({ user_avatar: publicUrl }).eq('user_id', user.id);
+
+      // Ensure we have a DB-level profile record and keep it in sync
+      try {
+        const profilePayload = {
+          user_id: user.id,
+          full_name: (user.user_metadata?.full_name || user.user_metadata?.user_name || userName),
+          avatar_url: publicUrl,
+          avatar_path: filename,
+          updated_at: new Date().toISOString()
+        };
+        await supabase.from('profiles').upsert(profilePayload, { onConflict: 'user_id' });
+      } catch (err) {
+        console.warn('Profile upsert failed (avatar):', err);
+      }
+
+      // Refresh page state by forcing a reload or updating UI values
+      // Simple approach: set window.location to trigger re-fetch via useAuth hook
+      window.location.reload();
+    } catch (err) {
+      console.error('Avatar upload error', err);
+      alert('Avatar yüklenirken hata oluştu.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const handleSaveProfile = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!user) return;
+    try {
+      setSavingProfile(true);
+      const supabase: any = createClient();
+      const newMetadata = {
+        ...(user.user_metadata || {}),
+        brand: brand || null,
+        address: address || null,
+        billing_address: billingAddress || null,
+        contact_phone: contactPhone || null
+      };
+
+      const { data, error } = await supabase.auth.updateUser({ data: newMetadata });
+      if (error) throw error;
+
+      // Update comments' user_name to reflect name/brand changes
+      const newName = user.user_metadata?.full_name || user.user_metadata?.user_name || brand || userName;
+      await supabase.from('comments').update({ user_name: newName }).eq('user_id', user.id);
+
+      // Also upsert to `profiles` table so DB has canonical profile fields
+      try {
+        const profilePayload = {
+          user_id: user.id,
+          full_name: user.user_metadata?.full_name || user.user_metadata?.user_name || brand || userName,
+          brand: newMetadata.brand || null,
+          address: newMetadata.address || null,
+          billing_address: newMetadata.billing_address || null,
+          contact_phone: newMetadata.contact_phone || null,
+          updated_at: new Date().toISOString()
+        };
+        await supabase.from('profiles').upsert(profilePayload, { onConflict: 'user_id' });
+      } catch (err) {
+        console.warn('Profile upsert failed (save):', err);
+      }
+
+      setIsEditing(false);
+      window.location.reload();
+    } catch (err) {
+      console.error('Profile save error', err);
+      alert('Profil kaydedilirken hata oluştu.');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!newPassword || newPassword !== confirmPassword) {
+      alert('Yeni şifre ve onayı eşleşmiyor.');
+      return;
+    }
+    try {
+      setChangingPassword(true);
+      const supabase: any = createClient();
+      const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      alert('Şifre başarılı şekilde değiştirildi.');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      console.error('Password change error', err);
+      alert('Şifre değiştirilirken hata oluştu.');
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -300,6 +472,95 @@ export default function ProfilPage() {
                           Google
                         </span>
                       )}
+                    </div>
+                    <div className="mt-3 flex items-center gap-3">
+                      <button
+                        onClick={() => setIsEditing(!isEditing)}
+                        className="primary-button px-3 py-1 text-sm"
+                      >
+                        {isEditing ? 'İptal' : 'Profili Düzenle'}
+                      </button>
+                      <label className="text-xs text-zinc-500">Avatar yüklemek için resim seçin:</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarSelect}
+                        className="text-sm text-zinc-400"
+                        disabled={avatarUploading}
+                      />
+                      {avatarUploading && <span className="text-zinc-400 text-sm">Yükleniyor...</span>}
+                    </div>
+
+                    {isEditing && (
+                      <form onSubmit={handleSaveProfile} className="mt-4 space-y-3">
+                        <div className="grid md:grid-cols-2 gap-3">
+                          <input
+                            className="w-full h-10 border-none outline-none text-sm bg-zinc-900 text-white font-medium pl-2 rounded-sm"
+                            placeholder="Marka / Firma"
+                            value={brand}
+                            onChange={(e) => setBrand(e.target.value)}
+                          />
+                          <input
+                            className="w-full h-10 border-none outline-none text-sm bg-zinc-900 text-white font-medium pl-2 rounded-sm"
+                            placeholder="İletişim Telefonu"
+                            value={contactPhone}
+                            onChange={(e) => setContactPhone(e.target.value)}
+                          />
+                        </div>
+
+                        <textarea
+                          className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-white text-sm placeholder-zinc-500 focus:border-zinc-500 focus:outline-none rounded-sm"
+                          placeholder="Adres"
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                          rows={2}
+                        />
+
+                        <textarea
+                          className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-white text-sm placeholder-zinc-500 focus:border-zinc-500 focus:outline-none rounded-sm"
+                          placeholder="Fatura Adresi"
+                          value={billingAddress}
+                          onChange={(e) => setBillingAddress(e.target.value)}
+                          rows={2}
+                        />
+
+                        <div className="flex gap-3">
+                          <button type="submit" className="primary-button flex-1" disabled={savingProfile}>
+                            {savingProfile ? 'Kaydediliyor...' : 'Bilgileri Kaydet'}
+                          </button>
+                          <button type="button" onClick={() => { setIsEditing(false); }} className="primary-button flex-1">
+                            Vazgeç
+                          </button>
+                        </div>
+                      </form>
+                    )}
+
+                    {/* Inline password change */}
+                    <div className="mt-4 bg-black border border-zinc-800 p-3 rounded-sm">
+                      <h3 className="text-sm text-zinc-300 font-semibold">Şifre Değiştir</h3>
+                      <form onSubmit={handleChangePassword} className="mt-2 space-y-2">
+                        <div className="grid md:grid-cols-2 gap-2">
+                          <input
+                            type="password"
+                            placeholder="Yeni Şifre"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="w-full h-10 border-none outline-none text-sm bg-zinc-900 text-white font-medium pl-2 rounded-sm"
+                          />
+                          <input
+                            type="password"
+                            placeholder="Yeni Şifre (Tekrar)"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="w-full h-10 border-none outline-none text-sm bg-zinc-900 text-white font-medium pl-2 rounded-sm"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button type="submit" className="primary-button" disabled={changingPassword}>
+                            {changingPassword ? 'Değiştiriliyor...' : 'Şifreyi Değiştir'}
+                          </button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
