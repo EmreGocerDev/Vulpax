@@ -87,7 +87,7 @@ export default function PayTRCheckout({ userBasket, userInfo, totalAmount }: Pay
   }
 
   return (
-    <div className="w-full bg-white rounded-lg overflow-hidden">
+    <div className="w-full rounded-lg overflow-hidden">
       <Script src="https://www.paytr.com/js/iframeResizer.min.js" strategy="afterInteractive" />
       <iframe
         src={`https://www.paytr.com/odeme/guvenli/${token}`}

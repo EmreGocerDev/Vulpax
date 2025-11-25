@@ -35,9 +35,12 @@ export async function POST(request: Request) {
     const max_installment = "0";
     const currency = "TL";
 
+    // User Basket Base64 Encode
+    const user_basket_encoded = Buffer.from(user_basket).toString("base64");
+
     // Generate Hash
-    // Concatenate: merchant_id + user_ip + merchant_oid + email + payment_amount + user_basket + no_installment + max_installment + currency + test_mode
-    const hash_str = `${merchant_id}${user_ip}${merchant_oid}${email}${payment_amount}${user_basket}${no_installment}${max_installment}${currency}${test_mode}`;
+    // Concatenate: merchant_id + user_ip + merchant_oid + email + payment_amount + user_basket_encoded + no_installment + max_installment + currency + test_mode
+    const hash_str = `${merchant_id}${user_ip}${merchant_oid}${email}${payment_amount}${user_basket_encoded}${no_installment}${max_installment}${currency}${test_mode}`;
     
     const paytr_token = crypto
       .createHmac("sha256", merchant_key)
@@ -52,7 +55,7 @@ export async function POST(request: Request) {
     params.append("email", email);
     params.append("payment_amount", payment_amount.toString());
     params.append("paytr_token", paytr_token);
-    params.append("user_basket", user_basket);
+    params.append("user_basket", user_basket_encoded);
     params.append("debug_on", debug_on);
     params.append("no_installment", no_installment);
     params.append("max_installment", max_installment);
