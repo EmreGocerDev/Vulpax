@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import UserMenu from "./UserMenu";
 import MobileMenu from "./MobileMenu";
@@ -19,8 +19,9 @@ export default function Header() {
 
   return (
     <>
-      <header className="border-b border-white/10 fixed top-0 left-0 right-0 backdrop-blur-xl bg-black/30 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
+        <header className="border-b border-white/10 backdrop-blur-xl bg-black/30 w-full shadow-lg">
+          <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-4">
               <Image
@@ -49,6 +50,9 @@ export default function Header() {
               </Link>
               <Link href="/forum" className="text-zinc-300 hover:text-white transition-colors text-base">
                 Forum
+              </Link>
+              <Link href="/magaza" className="text-zinc-300 hover:text-white transition-colors text-base">
+                Mağaza
               </Link>
               <Link href="/#pricing" className="text-zinc-300 hover:text-white transition-colors text-base">
                 Fiyatlar
@@ -87,6 +91,7 @@ export default function Header() {
           </div>
         </div>
       </header>
+      </div>
 
       {/* Login Modal */}
       <LoginModal 

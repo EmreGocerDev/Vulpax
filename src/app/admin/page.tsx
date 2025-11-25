@@ -114,6 +114,23 @@ export default function AdminPage() {
         {/* Quick Links */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 stagger-children">
           <Link
+            href="/admin/urunler"
+            className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1"
+          >
+            <div className="flex items-center gap-4">
+              <div className="bg-green-500/10 p-3 rounded-lg">
+                <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Ürünler</h3>
+                <p className="text-sm text-zinc-400">Mağaza yönetimi</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
             href="/admin/uygulamalar"
             className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1"
           >
