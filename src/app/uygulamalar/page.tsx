@@ -31,6 +31,7 @@ interface Application {
   category_id: string;
   categories: Category;
   created_at: string;
+  price: number;
 }
 
 export default function ApplicationsPage() {
@@ -113,60 +114,8 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50 animate-fade-in-down">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-4">
-              <Image
-                src="/logo2.png"
-                alt="Vulpax Digital"
-                width={40}
-                height={40}
-                className="rounded-lg"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-white logo-font">
-                  VULPAX<span className="text-red-500">X</span>
-                </h1>
-                <p className="text-xs text-zinc-400">DIGITAL</p>
-              </div>
-            </Link>
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="/#products" className="text-zinc-300 hover:text-white transition-colors">Ürünler</a>
-              <a href="/#services" className="text-zinc-300 hover:text-white transition-colors">Hizmetler</a>
-              <a href="/references" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
-              <a href="/#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
-              <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
-              {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
-                <a href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Editör
-                </a>
-              )}
-              {!authLoading && (
-                user ? (
-                  <UserMenu user={user} onSignOut={signOut} />
-                ) : (
-                  <div className="button-borders">
-                    <button 
-                      onClick={() => setIsLoginModalOpen(true)}
-                      className="primary-button"
-                    >
-                      GİRİŞ YAP
-                    </button>
-                  </div>
-                )
-              )}
-            </nav>
-            <MobileMenu onLoginClick={() => setIsLoginModalOpen(true)} user={user} onSignOut={signOut} />
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen text-white pt-32">
+      {/* Header removed */}
       
       <LoginModal
         isOpen={isLoginModalOpen}
@@ -201,16 +150,16 @@ export default function ApplicationsPage() {
       <section className="py-12 border-b border-zinc-800">
         <div className="max-w-7xl mx-auto px-6 animate-fade-in-up">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Ücretsiz Uygulamalar
+            Uygulamalar
           </h1>
           <p className="text-zinc-400 text-lg">
-            Vulpax Digital tarafından geliştirilen ücretsiz uygulamaları keşfedin
+            Vulpax Digital tarafından geliştirilen uygulamaları keşfedin
           </p>
         </div>
       </section>
 
       {/* Category Filter */}
-      <section className="py-6 border-b border-zinc-800 sticky top-[73px] bg-black z-30 animate-fade-in">
+      <section className="py-6 border-b border-zinc-800 sticky top-[73px] backdrop-blur-xl bg-black/30 z-30 animate-fade-in">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             <button
@@ -261,71 +210,73 @@ export default function ApplicationsPage() {
                 <Link
                   key={app.id}
                   href={`/uygulamalar/${app.id}`}
-                  className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 group hover:shadow-2xl hover:shadow-red-500/10 hover:-translate-y-2"
+                  className="group relative overflow-hidden transition-all duration-300"
                 >
-                  {/* App Image */}
-                  <div className="aspect-video bg-zinc-800 relative overflow-hidden">
-                    {app.image_url ? (
-                      <Image
-                        src={app.image_url}
-                        alt={app.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg
-                          className="w-16 h-16 text-zinc-700"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                    {/* Category Badge */}
-                    <div className="absolute top-3 left-3">
-                      <span className="bg-black/80 text-white text-xs px-2 py-1">
-                        {app.categories.name}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* App Info */}
-                  <div className="p-5">
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-zinc-300 transition-colors">
-                      {app.title}
-                    </h3>
-                    <p className="text-zinc-400 text-sm mb-4 line-clamp-2">
-                      {app.description}
-                    </p>
-
-                    <div className="flex items-center justify-between text-xs text-zinc-500">
-                      <div className="flex items-center gap-4">
-                        <span>v{app.version}</span>
-                        <span>{formatFileSize(app.file_size)}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                          />
-                        </svg>
-                        <span>{app.download_count}</span>
+                  {/* Outer glow */}
+                  <div className="absolute -inset-2 bg-gradient-to-r from-[#2666E3]/30 via-[#67DBFF]/30 to-[#2666E3]/30 rounded-xl blur-[40px] opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
+                  
+                  {/* Glass card */}
+                  <div className="relative bg-gradient-to-br from-[#0a0f1a]/80 via-[#0d1117]/60 to-[#05050B]/80 backdrop-blur-xl border border-[#BAFFFF]/20 group-hover:border-[#BAFFFF]/50 rounded-lg overflow-hidden transition-all duration-300">
+                    {/* App Image */}
+                    <div className="aspect-video bg-zinc-900/50 relative overflow-hidden">
+                      {app.image_url ? (
+                        <Image
+                          src={app.image_url}
+                          alt={app.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg
+                            className="w-16 h-16 text-zinc-700"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                            />
+                          </svg>
+                        </div>
+                      )}
+                      {/* Category Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-[#0a0f1a]/90 backdrop-blur-sm border border-[#BAFFFF]/30 text-white text-xs px-3 py-1 font-semibold rounded">
+                          {app.categories.name}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="mt-3 pt-3 border-t border-zinc-800 text-xs text-zinc-500">
-                      {formatDate(app.created_at)}
+                    {/* App Info */}
+                    <div className="p-5">
+                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#BAFFFF] transition-colors">
+                        {app.title}
+                      </h3>
+                      <p className="text-zinc-400 text-sm mb-4 line-clamp-2">
+                        {app.description}
+                      </p>
+
+                      <div className="flex items-center justify-between text-xs text-zinc-500">
+                        <div className="flex items-center gap-4">
+                          <span>v{app.version}</span>
+                          <span>{formatFileSize(app.file_size)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {app.price > 0 ? (
+                            <span className="text-[#BAFFFF] font-bold text-sm">{app.price} ₺</span>
+                          ) : (
+                            <span className="text-green-400 font-bold text-sm">Ücretsiz</span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-[#BAFFFF]/20 text-xs text-zinc-500">
+                        {formatDate(app.created_at)}
+                      </div>
                     </div>
                   </div>
                 </Link>

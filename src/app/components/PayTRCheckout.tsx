@@ -12,9 +12,10 @@ interface PayTRCheckoutProps {
     phone: string;
   };
   totalAmount: number; // TL cinsinden (örn: 100.50)
+  merchantOid: string;
 }
 
-export default function PayTRCheckout({ userBasket, userInfo, totalAmount }: PayTRCheckoutProps) {
+export default function PayTRCheckout({ userBasket, userInfo, totalAmount, merchantOid }: PayTRCheckoutProps) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,9 +31,6 @@ export default function PayTRCheckout({ userBasket, userInfo, totalAmount }: Pay
           userBasket.map(item => [item.name, item.price.toString(), item.quantity])
         );
 
-        // Benzersiz sipariş numarası oluştur
-        const merchant_oid = "SP" + Math.floor(Math.random() * 9999999) + Date.now();
-
         // Tutar 100 ile çarpılmalı (kuruş cinsinden)
         const payment_amount = Math.round(totalAmount * 100);
 
@@ -43,7 +41,7 @@ export default function PayTRCheckout({ userBasket, userInfo, totalAmount }: Pay
           },
           body: JSON.stringify({
             user_basket: basketStr,
-            merchant_oid,
+            merchant_oid: merchantOid,
             payment_amount,
             email: userInfo.email,
             user_name: userInfo.name,
@@ -67,7 +65,7 @@ export default function PayTRCheckout({ userBasket, userInfo, totalAmount }: Pay
     };
 
     fetchToken();
-  }, [userBasket, userInfo, totalAmount]);
+  }, [userBasket, userInfo, totalAmount, merchantOid]);
 
   if (loading) {
     return (

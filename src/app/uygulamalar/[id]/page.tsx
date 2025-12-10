@@ -12,6 +12,9 @@ import SignUpModal from "../../components/SignUpModal";
 import Footer from "../../components/Footer";
 import { supabase } from "@/lib/supabase";
 
+import PayTRCheckout from "../../components/PayTRCheckout";
+import Portal from "../../components/Portal";
+
 interface Category {
   id: string;
   name: string;
@@ -32,6 +35,7 @@ interface Application {
   category_id: string;
   categories: Category;
   created_at: string;
+  price: number;
 }
 
 interface Comment {
@@ -200,6 +204,9 @@ export default function ApplicationDetailPage() {
   const [application, setApplication] = useState<Application | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [hasDownloaded, setHasDownloaded] = useState(false);
+  const [hasPurchased, setHasPurchased] = useState(false);
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+  const [purchaseOrder, setPurchaseOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
   const [rating, setRating] = useState(5);
@@ -215,6 +222,7 @@ export default function ApplicationDetailPage() {
       fetchApplication();
       fetchComments();
       checkDownloadStatus();
+      checkPurchaseStatus();
     }
   }, [params.id, user]);
 
@@ -324,6 +332,91 @@ export default function ApplicationDetailPage() {
       .single();
 
     setHasDownloaded(!!data);
+  };
+
+  const checkPurchaseStatus = async () => {
+    if (!user) return;
+    
+    // Wait for application to be loaded
+    if (!application) return;
+
+    if (application.price === 0) {
+      setHasPurchased(true);
+      return;
+    }
+
+    const { data } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('application_id', application.id)
+      .eq('user_id', user.id)
+      .eq('status', 'success')
+      .single();
+
+    if (data) {
+      setHasPurchased(true);
+    }
+  };
+
+  // Call checkPurchaseStatus when application is loaded
+  useEffect(() => {
+    if (application && user) {
+      checkPurchaseStatus();
+    }
+  }, [application, user]);
+
+  const handlePurchase = async () => {
+    if (!user || !application) return;
+
+    const price = application.price || 0;
+    const merchant_oid = "SP" + Math.floor(Math.random() * 9999999) + Date.now();
+
+    // Ücretsiz uygulama ise direkt kütüphaneye ekle
+    if (price === 0) {
+      const { error } = await supabase
+        .from('orders')
+        .insert({
+          merchant_oid,
+          user_id: user.id,
+          application_id: application.id,
+          amount: 0,
+          status: 'success'
+        });
+
+      if (error) {
+        console.error('Free order creation failed:', error);
+        alert('Sipariş oluşturulamadı.');
+        return;
+      }
+
+      setHasPurchased(true);
+      alert('Uygulama kütüphanenize eklendi.');
+      return;
+    }
+
+    // Ücretli uygulama için sipariş oluştur
+    const { error } = await supabase
+      .from('orders')
+      .insert({
+        merchant_oid,
+        user_id: user.id,
+        application_id: application.id,
+        amount: price,
+        status: 'pending'
+      });
+
+    if (error) {
+      console.error('Order creation failed:', error);
+      alert('Sipariş oluşturulamadı.');
+      return;
+    }
+
+    setPurchaseOrder({
+      merchant_oid,
+      amount: price,
+      name: application.title
+    });
+    setIsPurchaseModalOpen(true);
   };
 
   const handleDownload = async () => {
@@ -471,61 +564,8 @@ export default function ApplicationDetailPage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Header */}
-      <header className="border-b border-zinc-800 sticky top-0 bg-black z-50 animate-fade-in-down">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-4">
-              <Image
-                src="/logo2.png"
-                alt="Vulpax Digital"
-                width={40}
-                height={40}
-                className="rounded-lg"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-white logo-font">
-                  VULPA<span className="text-red-500">X</span>
-                </h1>
-                <p className="text-xs text-zinc-400">DIGITAL</p>
-              </div>
-            </Link>
-            <nav className="hidden md:flex items-center space-x-8">
-              <a href="/#products" className="text-zinc-300 hover:text-white transition-colors">Ürünler</a>
-              <a href="/#services" className="text-zinc-300 hover:text-white transition-colors">Hizmetler</a>
-              <a href="/references" className="text-zinc-300 hover:text-white transition-colors">Referanslar</a>
-              <a href="/#contact" className="text-zinc-300 hover:text-white transition-colors">İletişim</a>
-              <a href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors">Ücretsiz Uygulamalar</a>
-              {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
-                <a href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Editör
-                </a>
-              )}
-              {!authLoading && (
-                user ? (
-                  <UserMenu user={user} onSignOut={signOut} />
-                ) : (
-                  <div className="button-borders">
-                    <button 
-                      onClick={() => setIsLoginModalOpen(true)}
-                      className="primary-button"
-                    >
-                      GİRİŞ YAP
-                    </button>
-                  </div>
-                )
-              )}
-            </nav>
-            <MobileMenu onLoginClick={() => setIsLoginModalOpen(true)} user={user} onSignOut={signOut} />
-            <MobileMenu onLoginClick={() => setIsLoginModalOpen(true)} user={user} onSignOut={signOut} />
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen text-white pt-32">
+      {/* Header removed */}
 
       <LoginModal
         isOpen={isLoginModalOpen}
@@ -724,6 +764,13 @@ export default function ApplicationDetailPage() {
                   <div className="text-xl font-bold">{application.download_count}</div>
                 </div>
 
+                <div>
+                  <div className="text-sm text-zinc-400 mb-1">Fiyat</div>
+                  <div className="text-2xl font-bold text-[#BAFFFF]">
+                    {application.price > 0 ? `${application.price} ₺` : 'Ücretsiz'}
+                  </div>
+                </div>
+
                 {averageRating > 0 && (
                   <div>
                     <div className="text-sm text-zinc-400 mb-1">Ortalama Puan</div>
@@ -749,20 +796,32 @@ export default function ApplicationDetailPage() {
                 <div className="pt-4 border-t border-zinc-800">
                   {user ? (
                     <div className="button-borders w-full">
-                      <button
-                        onClick={handleDownload}
-                        className="primary-button w-full flex items-center justify-center gap-2"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                          />
-                        </svg>
-                        {hasDownloaded ? 'TEKRAR İNDİR' : 'İNDİR'}
-                      </button>
+                      {hasPurchased ? (
+                        <button
+                          onClick={handleDownload}
+                          className="primary-button w-full flex items-center justify-center gap-2"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                            />
+                          </svg>
+                          {hasDownloaded ? 'TEKRAR İNDİR' : 'İNDİR'}
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handlePurchase}
+                          className="primary-button w-full flex items-center justify-center gap-2 bg-green-600! hover:bg-green-700! border-green-500!"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          SATIN AL
+                        </button>
+                      )}
                     </div>
                   ) : (
                     <div>
@@ -789,6 +848,46 @@ export default function ApplicationDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* PayTR Modal */}
+      {isPurchaseModalOpen && user && (
+        <Portal>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <div className="bg-zinc-900 border border-zinc-800 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative rounded-xl shadow-2xl">
+              <button 
+                onClick={() => setIsPurchaseModalOpen(false)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-white z-10"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              
+              <div className="p-6">
+                <h2 className="text-2xl font-bold mb-6">Satın Al: {application.title}</h2>
+                
+                <PayTRCheckout 
+                  userBasket={[
+                    {
+                      name: application.title,
+                      price: application.price || 0,
+                      quantity: 1
+                    }
+                  ]}
+                  userInfo={{
+                    email: user.email || '',
+                    name: user.user_metadata?.full_name || user.user_metadata?.name || 'Kullanıcı',
+                    address: user.user_metadata?.address || 'Teslimat adresi',
+                    phone: user.user_metadata?.phone || '05555555555'
+                  }}
+                  totalAmount={application.price || 0}
+                  merchantOid={purchaseOrder?.merchant_oid}
+                />
+              </div>
+            </div>
+          </div>
+        </Portal>
+      )}
     </div>
   );
 }

@@ -24,8 +24,10 @@ export async function POST(request: Request) {
     
     // URLs
     const origin = new URL(request.url).origin;
-    const merchant_ok_url = `${origin}/odeme/basarili`;
-    const merchant_fail_url = `${origin}/odeme/basarisiz`;
+    // PayTR POST redirect'i için API route kullanıyoruz
+    const merchant_ok_url = `${origin}/api/payment-success`;
+    const merchant_fail_url = `${origin}/api/payment-success`; // Başarısız da aynı yere gitsin, orada kontrol ediliyor
+
     
     // Other params
     const timeout_limit = "30";

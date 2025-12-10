@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import SocialFixed from "../components/SocialFixed";
+import MouseTracker from "./components/MouseTracker";
 import "../components/SocialFixed.css";
 
 const geistSans = Geist({
@@ -23,6 +24,10 @@ const orbitron = Orbitron({
   weight: ["400", "700"],
 });
 
+export const viewport: Viewport = {
+  themeColor: '#000000',
+};
+
 export const metadata: Metadata = {
   title: "Vulpax Software - Yazılım ve Web Entegrasyonları",
   description: "Vulpax Software - Modern yazılım çözümleri ve web entegrasyonları",
@@ -36,7 +41,6 @@ export const metadata: Metadata = {
     shortcut: '/favicon.svg',
   },
   manifest: '/manifest.json',
-  themeColor: '#000000',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -73,14 +77,13 @@ export default function RootLayout({
   return (
     <html lang="tr" className="dark">
       <head>
-        <meta name="theme-color" content="#000000" />
         <meta name="msapplication-TileColor" content="#000000" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} antialiased bg-black text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} antialiased text-white`}
       >
         <Header />
         <main className="min-h-screen">
@@ -88,6 +91,7 @@ export default function RootLayout({
         </main>
         <Footer />
         <SocialFixed />
+        <MouseTracker />
       </body>
     </html>
   );

@@ -6,49 +6,47 @@ import Link from "next/link";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 
-interface Product {
+interface Plan {
   id: string;
   name: string;
   description: string | null;
   price: number;
   features: string[] | null;
-  image_url: string | null;
   is_active: boolean;
 }
 
-export default function ProductsAdminPage() {
+export default function PlansAdminPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
   
   // Form states
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
   const [features, setFeatures] = useState(""); // Newline separated
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/");
     } else if (user) {
-      fetchProducts();
+      fetchPlans();
     }
   }, [user, authLoading, router]);
 
-  const fetchProducts = async () => {
+  const fetchPlans = async () => {
     try {
       const { data, error } = await supabase
-        .from('products')
+        .from('plans')
         .select('*')
         .order('price', { ascending: true });
 
       if (error) throw error;
-      setProducts(data || []);
+      setPlans(data || []);
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching plans:', error);
     } finally {
       setLoading(false);
     }
@@ -58,95 +56,96 @@ export default function ProductsAdminPage() {
     e.preventDefault();
     
     const featureArray = features.split('\n').filter(f => f.trim() !== '');
-    const productData = {
+    const planData = {
       name,
       description,
       price: parseFloat(price),
-      image_url: imageUrl,
       features: featureArray,
     };
 
     try {
-      if (editingProduct) {
+      if (editingPlan) {
         const { error } = await supabase
-          .from('products')
-          .update(productData)
-          .eq('id', editingProduct.id);
+          .from('plans')
+          .update(planData)
+          .eq('id', editingPlan.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from('products')
-          .insert([productData]);
+          .from('plans')
+          .insert([planData]);
         if (error) throw error;
       }
 
       resetForm();
-      fetchProducts();
+      fetchPlans();
     } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Ürün kaydedilirken bir hata oluştu.');
+      console.error('Error saving plan:', error);
+      alert('Plan kaydedilirken bir hata oluştu.');
     }
   };
 
-  const handleEdit = (product: Product) => {
-    setEditingProduct(product);
-    setName(product.name);
-    setDescription(product.description || "");
-    setPrice(product.price.toString());
-    setImageUrl(product.image_url || "");
-    setFeatures(product.features ? product.features.join('\n') : "");
+  const handleEdit = (plan: Plan) => {
+    setEditingPlan(plan);
+    setName(plan.name);
+    setDescription(plan.description || "");
+    setPrice(plan.price.toString());
+    setFeatures(plan.features ? plan.features.join('\n') : "");
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu ürünü silmek istediğinizden emin misiniz?')) return;
+    if (!confirm('Bu planı silmek istediğinizden emin misiniz?')) return;
 
     try {
       const { error } = await supabase
-        .from('products')
+        .from('plans')
         .delete()
         .eq('id', id);
-      
+
       if (error) throw error;
-      fetchProducts();
+      fetchPlans();
     } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Ürün silinirken bir hata oluştu.');
+      console.error('Error deleting plan:', error);
+      alert('Plan silinirken bir hata oluştu.');
     }
   };
 
   const resetForm = () => {
-    setEditingProduct(null);
+    setEditingPlan(null);
     setName("");
     setDescription("");
     setPrice("");
-    setImageUrl("");
     setFeatures("");
   };
 
   if (authLoading || loading) {
-    return <div className="min-h-screen text-white flex items-center justify-center">Yükləniyor...</div>;
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white">Yükleniyor...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen text-white p-8 pt-24">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-black text-white pt-32 pb-12">
+      <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold logo-font">ÜRÜN YÖNETİMİ</h1>
-          <Link href="/admin" className="text-zinc-400 hover:text-white">
-            ← Admin Paneline Dön
+          <h1 className="text-3xl font-bold">Plan Yönetimi</h1>
+          <Link href="/admin" className="text-zinc-400 hover:text-white transition-colors">
+            &larr; Panele Dön
           </Link>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form Section */}
           <div className="lg:col-span-1">
-            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-lg sticky top-24">
+            <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-lg sticky top-32">
               <h2 className="text-xl font-bold mb-4">
-                {editingProduct ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}
+                {editingPlan ? 'Planı Düzenle' : 'Yeni Plan Ekle'}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1">Ürün Adı</label>
+                  <label className="block text-sm text-zinc-400 mb-1">Plan Adı</label>
                   <input
                     type="text"
                     value={name}
@@ -175,16 +174,6 @@ export default function ProductsAdminPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1">Görsel URL (Kare Logo)</label>
-                  <input
-                    type="text"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="w-full bg-zinc-800 border border-zinc-700 p-2 rounded text-white"
-                    placeholder="https://..."
-                  />
-                </div>
-                <div>
                   <label className="block text-sm text-zinc-400 mb-1">Özellikler (Her satıra bir özellik)</label>
                   <textarea
                     value={features}
@@ -198,9 +187,9 @@ export default function ProductsAdminPage() {
                     type="submit"
                     className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded font-bold transition-colors"
                   >
-                    {editingProduct ? 'GÜNCELLE' : 'EKLE'}
+                    {editingPlan ? 'GÜNCELLE' : 'EKLE'}
                   </button>
-                  {editingProduct && (
+                  {editingPlan && (
                     <button
                       type="button"
                       onClick={resetForm}
@@ -217,41 +206,36 @@ export default function ProductsAdminPage() {
           {/* List Section */}
           <div className="lg:col-span-2">
             <div className="grid gap-4">
-              {products.map((product) => (
-                <div key={product.id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-lg flex flex-col md:flex-row justify-between gap-4">
+              {plans.map((plan) => (
+                <div key={plan.id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-lg flex flex-col md:flex-row justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      {product.image_url && (
-                        <img src={product.image_url} alt={product.name} className="w-12 h-12 rounded object-cover bg-zinc-800" />
-                      )}
-                      <div>
-                        <h3 className="text-xl font-bold text-white">{product.name}</h3>
-                        <span className="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded text-sm">
-                          {product.price.toLocaleString('tr-TR')} TL
-                        </span>
-                      </div>
+                      <h3 className="text-xl font-bold text-white">{plan.name}</h3>
+                      <span className="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded text-sm">
+                        {plan.price.toLocaleString('tr-TR')} TL
+                      </span>
                     </div>
-                    <p className="text-zinc-400 text-sm mb-3">{product.description}</p>
+                    <p className="text-zinc-400 text-sm mb-3">{plan.description}</p>
                     <div className="flex flex-wrap gap-2">
-                      {product.features?.slice(0, 3).map((feature, idx) => (
+                      {plan.features?.slice(0, 3).map((feature, idx) => (
                         <span key={idx} className="text-xs bg-zinc-800/50 border border-zinc-700 px-2 py-1 rounded text-zinc-300">
                           {feature}
                         </span>
                       ))}
-                      {(product.features?.length ?? 0) > 3 && (
-                        <span className="text-xs text-zinc-500 py-1">+{(product.features?.length ?? 0) - 3} özellik daha</span>
+                      {(plan.features?.length ?? 0) > 3 && (
+                        <span className="text-xs text-zinc-500 py-1">+{(plan.features?.length ?? 0) - 3} özellik daha</span>
                       )}
                     </div>
                   </div>
                   <div className="flex md:flex-col gap-2 justify-center">
                     <button
-                      onClick={() => handleEdit(product)}
+                      onClick={() => handleEdit(plan)}
                       className="bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-600/50 px-4 py-2 rounded transition-colors"
                     >
                       Düzenle
                     </button>
                     <button
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(plan.id)}
                       className="bg-red-600/20 hover:bg-red-600/40 text-red-400 border border-red-600/50 px-4 py-2 rounded transition-colors"
                     >
                       Sil
@@ -260,9 +244,9 @@ export default function ProductsAdminPage() {
                 </div>
               ))}
 
-              {products.length === 0 && (
+              {plans.length === 0 && (
                 <div className="text-center py-12 text-zinc-500 bg-zinc-900/50 rounded-lg border border-zinc-800 border-dashed">
-                  Henüz ürün eklenmemiş.
+                  Henüz plan eklenmemiş.
                 </div>
               )}
             </div>

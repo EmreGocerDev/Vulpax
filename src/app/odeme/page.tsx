@@ -29,6 +29,7 @@ function PaymentContent() {
   ]);
 
   const [totalAmount, setTotalAmount] = useState(100.00);
+  const [merchantOid, setMerchantOid] = useState("");
 
   useEffect(() => {
     if (productId) {
@@ -62,14 +63,14 @@ function PaymentContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-red-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black pt-32 pb-20 px-4">
+    <div className="min-h-screen pt-32 pb-20 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-8 text-center">
           GÜVENLİ <span className="text-red-500">ÖDEME</span>
@@ -142,6 +143,7 @@ function PaymentContent() {
                       alert("Lütfen tüm alanları doldurunuz.");
                       return;
                     }
+                    setMerchantOid("SP" + Math.floor(Math.random() * 9999999) + Date.now());
                     setStep(2);
                   }}
                   className="primary-button w-full"
@@ -164,6 +166,7 @@ function PaymentContent() {
               userBasket={basket}
               userInfo={userInfo}
               totalAmount={totalAmount}
+              merchantOid={merchantOid}
             />
           </div>
         )}
@@ -174,7 +177,7 @@ function PaymentContent() {
 
 export default function PaymentPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Yükleniyor...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Yükləniyor...</div>}>
       <PaymentContent />
     </Suspense>
   );

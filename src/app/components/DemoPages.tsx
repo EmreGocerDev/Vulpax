@@ -53,9 +53,9 @@ export default function DemoApps() {
 
   if (loading) {
     return (
-      <section className="py-16 px-6 bg-zinc-950">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="text-zinc-500 text-sm">Yükleniyor...</div>
+      <section className="py-16 px-6">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500 mx-auto"></div>
         </div>
       </section>
     );
@@ -63,7 +63,7 @@ export default function DemoApps() {
 
   if (demos.length === 0) {
     return (
-      <section className="py-16 px-6 bg-zinc-950">
+      <section className="py-16 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12 animate-fade-in-up">
             <h2 className="text-3xl font-bold mb-4">DEMO SAYFALARIMIZ</h2>
@@ -88,7 +88,7 @@ export default function DemoApps() {
   }
 
   return (
-    <section className="py-16 px-6 bg-zinc-950">
+    <section className="py-16 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 animate-fade-in-up">
           <h2 className="text-3xl font-bold mb-4">DEMO SAYFALARIMIZ</h2>
@@ -102,35 +102,41 @@ export default function DemoApps() {
               href={demo.demo_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-white transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10"
+              className="group relative overflow-hidden transition-all duration-300"
             >
-              {/* Preview Image */}
-              <div className="relative aspect-video bg-zinc-800">
-                <Image
-                  src={getImageUrl(demo)}
-                  alt={demo.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="absolute top-3 right-3 bg-red-500 text-white text-xs px-3 py-1 font-semibold">
-                  DEMO
+              {/* Outer glow */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-[#2666E3]/30 via-[#67DBFF]/30 to-[#2666E3]/30 rounded-xl blur-[40px] opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
+              
+              {/* Glass card */}
+              <div className="relative bg-gradient-to-br from-[#0a0f1a]/80 via-[#0d1117]/60 to-[#05050B]/80 backdrop-blur-xl border border-[#BAFFFF]/20 group-hover:border-[#BAFFFF]/50 rounded-lg overflow-hidden transition-all duration-300">
+                {/* Preview Image */}
+                <div className="relative aspect-video bg-zinc-900/50">
+                  <Image
+                    src={getImageUrl(demo)}
+                    alt={demo.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 right-3 bg-[#0a0f1a]/90 backdrop-blur-sm border border-[#BAFFFF]/30 text-white text-xs px-3 py-1 font-semibold rounded">
+                    DEMO
+                  </div>
                 </div>
-              </div>
 
-              {/* Content */}
-              <div className="p-5">
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-red-500 transition-colors">
-                  {demo.title}
-                </h3>
-                <p className="text-zinc-400 text-sm line-clamp-2 mb-4">
-                  {demo.description}
-                </p>
+                {/* Content */}
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#BAFFFF] transition-colors">
+                    {demo.title}
+                  </h3>
+                  <p className="text-zinc-400 text-sm line-clamp-2 mb-4">
+                    {demo.description}
+                  </p>
 
-                <div className="flex items-center gap-2 text-xs text-zinc-500">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                  <span className="group-hover:text-white transition-colors">DEMO'YU AÇ</span>
+                  <div className="flex items-center gap-2 text-xs text-zinc-500">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span className="group-hover:text-[#BAFFFF] transition-colors">DEMO'YU AÇ</span>
+                  </div>
                 </div>
               </div>
             </a>

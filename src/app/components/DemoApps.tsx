@@ -103,41 +103,47 @@ export default function DemoApps() {
             <Link 
               key={app.id} 
               href={`/uygulamalar/${app.id}`}
-              className="group bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-white transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10"
+              className="group relative overflow-hidden transition-all duration-300"
             >
-              {/* Image */}
-              <div className="relative aspect-video bg-zinc-800">
-                <Image
-                  src={getImageUrl(app)}
-                  alt={app.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                {app.category && (
-                  <div className="absolute top-3 right-3 bg-black/80 text-white text-xs px-3 py-1 font-semibold">
-                    {app.category}
-                  </div>
-                )}
-              </div>
-
-              {/* Content */}
-              <div className="p-5">
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-red-500 transition-colors">
-                  {app.name || app.title || 'Başlıksız'}
-                </h3>
-                <p className="text-zinc-400 text-sm line-clamp-2 mb-4">
-                  {app.description}
-                </p>
-
-                <div className="flex gap-2">
-                  <span className="flex-1 text-center bg-zinc-800 text-white py-2 text-xs font-medium group-hover:bg-white group-hover:text-black transition-colors">
-                    DETAYLARI GÖR
-                  </span>
-                  {app.demo_url && (
-                    <span className="flex-1 text-center border border-zinc-600 text-white py-2 text-xs font-medium group-hover:border-white transition-colors">
-                      DEMO
-                    </span>
+              {/* Outer glow */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-[#2666E3]/30 via-[#67DBFF]/30 to-[#2666E3]/30 rounded-xl blur-[40px] opacity-0 group-hover:opacity-90 transition-opacity duration-300"></div>
+              
+              {/* Glass card */}
+              <div className="relative bg-gradient-to-br from-[#0a0f1a]/80 via-[#0d1117]/60 to-[#05050B]/80 backdrop-blur-xl border border-[#BAFFFF]/20 group-hover:border-[#BAFFFF]/50 rounded-lg overflow-hidden transition-all duration-300">
+                {/* Image */}
+                <div className="relative aspect-video bg-zinc-900/50">
+                  <Image
+                    src={getImageUrl(app)}
+                    alt={app.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  {app.category && (
+                    <div className="absolute top-3 right-3 bg-[#0a0f1a]/90 backdrop-blur-sm border border-[#BAFFFF]/30 text-white text-xs px-3 py-1 font-semibold rounded">
+                      {app.category}
+                    </div>
                   )}
+                </div>
+
+                {/* Content */}
+                <div className="p-5">
+                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#BAFFFF] transition-colors">
+                    {app.name || app.title || 'Başlıksız'}
+                  </h3>
+                  <p className="text-zinc-400 text-sm line-clamp-2 mb-4">
+                    {app.description}
+                  </p>
+
+                  <div className="flex gap-2">
+                    <span className="flex-1 text-center bg-[#0a0f1a]/90 backdrop-blur-sm border border-[#BAFFFF]/30 text-white py-2 text-xs font-medium group-hover:border-[#BAFFFF] group-hover:shadow-lg group-hover:shadow-[#BAFFFF]/20 transition-all rounded">
+                      DETAYLARI GÖR
+                    </span>
+                    {app.demo_url && (
+                      <span className="flex-1 text-center bg-[#0a0f1a]/90 backdrop-blur-sm border border-[#BAFFFF]/30 text-white py-2 text-xs font-medium group-hover:border-[#BAFFFF] group-hover:shadow-lg group-hover:shadow-[#BAFFFF]/20 transition-all rounded">
+                        DEMO
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </Link>

@@ -68,7 +68,7 @@ export default function ShippingReturnsPage() {
             
             <h3 className="text-xl font-semibold text-white mb-3 mt-6">3.1. Anında Teslimat</h3>
             <p>
-              Ücretsiz uygulamalar ve hazır dijital ürünler, ödeme onayından sonra anında indirilebilir 
+              Uygulamalar ve hazır dijital ürünler, ödeme onayından sonra anında indirilebilir 
               hale gelir. İndirme linki e-posta adresinize gönderilir.
             </p>
 

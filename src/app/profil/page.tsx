@@ -22,11 +22,20 @@ interface SavedCard {
 export default function ProfilPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'cards'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'cards' | 'purchases'>('profile');
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const [loadingCards, setLoadingCards] = useState(false);
   const [showAddCard, setShowAddCard] = useState(false);
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
+  
+  // Satın alınan uygulamalar
+  const [purchasedApps, setPurchasedApps] = useState<any[]>([]);
+  const [loadingPurchases, setLoadingPurchases] = useState(false);
+  
+  // Receipt Modal
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [showReceipt, setShowReceipt] = useState(false);
+
   // Edit mode & profile fields
   const [isEditing, setIsEditing] = useState(false);
   const [brand, setBrand] = useState<string>(user?.user_metadata?.brand || '');
@@ -77,6 +86,40 @@ export default function ProfilPage() {
       fetchSavedCards();
     }
   }, [user, activeTab]);
+
+  useEffect(() => {
+    if (user && activeTab === 'purchases') {
+      fetchPurchasedApps();
+    }
+  }, [user, activeTab]);
+
+  const fetchPurchasedApps = async () => {
+    if (!user) return;
+    
+    setLoadingPurchases(true);
+    try {
+      const supabase: any = createClient();
+      // orders tablosundan başarılı siparişleri çek ve products/plans tabloları ile birleştir
+      const { data, error } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          product:products(*),
+          plan:plans(*),
+          application:applications(*)
+        `)
+        .eq('user_id', user.id)
+        .eq('status', 'success')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPurchasedApps(data || []);
+    } catch (error) {
+      console.error('Satın alımlar yüklenirken hata:', error);
+    } finally {
+      setLoadingPurchases(false);
+    }
+  };
 
   const fetchSavedCards = async () => {
     if (!user) return;
@@ -372,7 +415,7 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black pt-32 pb-20 px-4">
+    <div className="min-h-screen pt-32 pb-20 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="bg-black border border-zinc-800 rounded-sm overflow-visible">
           {/* SVG filters for decorative card surrounds (inserted once) */}
@@ -423,6 +466,21 @@ export default function ProfilPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                 </svg>
                 Kayıtlı Kartlarım
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('purchases')}
+              className={`flex-1 px-6 py-4 text-center transition-colors ${
+                activeTab === 'purchases'
+                  ? 'bg-zinc-800 text-white border-b-2 border-red-500'
+                  : 'text-zinc-500 hover:text-white hover:bg-zinc-800/50'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                Satın Alınanlar
               </div>
             </button>
           </div>
@@ -829,9 +887,184 @@ export default function ProfilPage() {
                 )}
               </div>
             )}
+
+            {/* Satın Alınanlar Sekmesi */}
+            {activeTab === 'purchases' && (
+              <div className="space-y-6">
+                <h2 className="text-xl font-bold mb-4">Satın Aldığım Uygulamalar</h2>
+                
+                {loadingPurchases ? (
+                  <div className="text-center py-8 text-zinc-500">Yükleniyor...</div>
+                ) : purchasedApps.length === 0 ? (
+                  <div className="text-center py-8 bg-zinc-800/50 rounded-lg border border-zinc-800">
+                    <p className="text-zinc-400 mb-4">Henüz satın alınmış bir uygulamanız bulunmuyor.</p>
+                    <button 
+                      onClick={() => router.push('/uygulamalar')}
+                      className="bg-white text-black px-6 py-2 rounded-full font-semibold hover:bg-zinc-200 transition-colors"
+                    >
+                      Mağazaya Git
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {purchasedApps.map((order) => {
+                      const item = order.product || order.plan || order.application;
+                      const isProduct = !!order.product;
+                      const isPlan = !!order.plan;
+                      const isApplication = !!order.application;
+                      
+                      const title = item?.name || item?.title || 'Bilinmeyen Ürün';
+                      const imageUrl = (isProduct || isApplication) ? item?.image_url : null;
+                      
+                      let typeLabel = 'Ürün';
+                      if (isPlan) typeLabel = 'Plan';
+                      if (isApplication) typeLabel = 'Uygulama';
+                      
+                      return (
+                        <div key={order.id} className="bg-zinc-800 border border-zinc-700 p-4 rounded-lg flex gap-4">
+                          <div className="w-20 h-20 relative shrink-0 bg-zinc-900 rounded-md overflow-hidden flex items-center justify-center">
+                            {imageUrl ? (
+                              <Image
+                                src={imageUrl}
+                                alt={title}
+                                fill
+                                className="object-cover"
+                              />
+                            ) : (
+                              <div className="text-zinc-600">
+                                {isPlan ? (
+                                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                  </svg>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 flex flex-col justify-between">
+                            <div>
+                              <h3 className="font-bold text-lg mb-1 line-clamp-1">{title}</h3>
+                              <p className="text-sm text-zinc-400">
+                                {typeLabel} • {new Date(order.created_at).toLocaleDateString('tr-TR')}
+                              </p>
+                            </div>
+                            <div className="flex items-center justify-between mt-2">
+                              <span className="text-green-500 font-semibold">{order.amount} ₺</span>
+                              <button 
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setShowReceipt(true);
+                                }}
+                                className="text-xs bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Dekont
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {showReceipt && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+              <h3 className="text-xl font-bold text-white">Sipariş Dekontu</h3>
+              <button 
+                onClick={() => setShowReceipt(false)}
+                className="text-zinc-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6 bg-zinc-900">
+              <div className="text-center py-4 border-b border-zinc-800 border-dashed">
+                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h4 className="text-lg font-medium text-white">Ödeme Başarılı</h4>
+                <p className="text-zinc-400 text-sm mt-1">
+                  {new Date(selectedOrder.created_at).toLocaleDateString('tr-TR', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Sipariş No</span>
+                  <span className="text-white font-mono">{selectedOrder.id.slice(0, 8).toUpperCase()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Ürün / Hizmet</span>
+                  <span className="text-white font-medium text-right">
+                    {(selectedOrder.product?.name || selectedOrder.plan?.title || selectedOrder.application?.title || 'Bilinmeyen Ürün')}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Alıcı</span>
+                  <span className="text-white text-right">
+                    {user?.user_metadata?.full_name || user?.user_metadata?.user_name || 'Kullanıcı'}
+                  </span>
+                </div>
+                {selectedOrder.merchant_oid && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-400">İşlem No</span>
+                    <span className="text-white font-mono text-xs">{selectedOrder.merchant_oid}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-4 border-t border-zinc-800 border-dashed">
+                <div className="flex justify-between items-end">
+                  <span className="text-zinc-400">Toplam Tutar</span>
+                  <span className="text-2xl font-bold text-white">{selectedOrder.amount} ₺</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-zinc-900/50 border-t border-zinc-800 flex gap-3">
+              <button 
+                onClick={() => window.print()}
+                className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Yazdır
+              </button>
+              <button 
+                onClick={() => setShowReceipt(false)}
+                className="flex-1 bg-white text-black hover:bg-zinc-200 py-2.5 rounded-lg text-sm font-medium transition-colors"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .flip-card {

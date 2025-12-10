@@ -100,9 +100,9 @@ export default function ReferencesSlider() {
 
   if (loading) {
     return (
-      <section className="py-12 px-6 bg-zinc-950">
+      <section className="py-12 px-6">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="text-zinc-500 text-sm">Yükleniyor...</div>
+          <div className="text-zinc-500 text-sm">Yükləniyor...</div>
         </div>
       </section>
     );
@@ -118,7 +118,7 @@ export default function ReferencesSlider() {
     : null;
 
   return (
-    <section className="py-12 px-6 bg-zinc-950">
+    <section className="py-12 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-8">

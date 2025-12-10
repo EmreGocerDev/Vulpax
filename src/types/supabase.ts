@@ -23,6 +23,42 @@ export interface Database {
           description: string | null
           price: number
           features: string[] | null
+          image_url: string | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          price: number
+          features?: string[] | null
+          image_url?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          price?: number
+          features?: string[] | null
+          image_url?: string | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      plans: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          price: number
+          features: string[] | null
           is_active: boolean
           created_at: string
           updated_at: string
@@ -48,6 +84,64 @@ export interface Database {
           updated_at?: string
         }
         Relationships: []
+      }
+      orders: {
+        Row: {
+          id: string
+          merchant_oid: string
+          user_id: string
+          product_id: string | null
+          plan_id: string | null
+          application_id: string | null
+          amount: number
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          merchant_oid: string
+          user_id: string
+          product_id?: string | null
+          plan_id?: string | null
+          application_id?: string | null
+          amount: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          merchant_oid?: string
+          user_id?: string
+          product_id?: string | null
+          plan_id?: string | null
+          application_id?: string | null
+          amount?: number
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_product_id_fkey"
+            columns: ["product_id"]
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_plan_id_fkey"
+            columns: ["plan_id"]
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_application_id_fkey"
+            columns: ["application_id"]
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       demos: AnyTable
       applications: AnyTable

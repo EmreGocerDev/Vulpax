@@ -19,71 +19,42 @@ export default function Header() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 flex flex-col">
-        <header className="border-b border-white/10 backdrop-blur-xl bg-black/30 w-full shadow-lg">
-          <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+        <header className="border border-white/10 backdrop-blur-xl bg-black/20 w-full max-w-5xl shadow-2xl rounded-full">
+          <div className="px-6 py-3">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-4">
+            <Link href="/" className="flex items-center space-x-3 group">
               <Image
                 src="/logo2.png"
                 alt="Vulpax Digital"
-                width={56}
-                height={56}
-                className="rounded-lg"
+                width={40}
+                height={40}
+                className="rounded-lg transition-transform group-hover:scale-105"
               />
               <div>
-                <h1 className="text-2xl font-bold text-white logo-font">
-                  VULPA<span className="text-red-500">X</span>
+                <h1 className="text-xl font-bold text-white logo-font leading-none">
+                  VULPA<span className="text-red-600">X</span>
                 </h1>
-                <p className="text-sm text-zinc-400">DIGITAL</p>
+                <p className="text-[10px] text-zinc-400 leading-none tracking-widest">DIGITAL</p>
               </div>
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/demolar" className="text-zinc-300 hover:text-white transition-colors text-base">
-                Demolar
-              </Link>
-              <Link href="/referanslar" className="text-zinc-300 hover:text-white transition-colors text-base">
-                Referanslar
-              </Link>
-              <Link href="/muzik-kutuphanesi" className="text-zinc-300 hover:text-white transition-colors text-base">
-                Müzik
-              </Link>
-              <Link href="/forum" className="text-zinc-300 hover:text-white transition-colors text-base">
-                Forum
-              </Link>
-              <Link href="/magaza" className="text-zinc-300 hover:text-white transition-colors text-base">
+              <Link href="/magaza" className="text-sm text-white/80 hover:text-[#BAFFFF] transition-colors font-medium">
                 Mağaza
               </Link>
-              <Link href="/#pricing" className="text-zinc-300 hover:text-white transition-colors text-base">
-                Fiyatlar
+              <Link href="/uygulamalar" className="text-sm text-white/80 hover:text-[#BAFFFF] transition-colors font-medium">
+                Uygulamalar
               </Link>
-              <Link href="/#contact" className="text-zinc-300 hover:text-white transition-colors text-base">
-                İletişim
-              </Link>
-              <Link href="/uygulamalar" className="text-zinc-300 hover:text-white transition-colors text-base">
-                Ücretsiz Uygulamalar
-              </Link>
-              {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
-                <Link href="/admin" className="text-zinc-300 hover:text-white transition-colors flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Editör
-                </Link>
-              )}
               {!loading && (
                 user ? (
                   <UserMenu user={user} onSignOut={signOut} />
                 ) : (
-                  <div className="button-borders">
-                    <button 
-                      onClick={() => setIsLoginModalOpen(true)}
-                      className="primary-button"
-                    >
-                      GİRİŞ YAP
-                    </button>
-                  </div>
+                  <button 
+                    onClick={() => setIsLoginModalOpen(true)}
+                    className="bg-white/10 hover:bg-white/20 border border-white/10 text-white px-5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                  >
+                    GİRİŞ YAP
+                  </button>
                 )
               )}
             </nav>

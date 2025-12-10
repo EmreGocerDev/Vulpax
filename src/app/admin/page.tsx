@@ -84,7 +84,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
       {/* Header */}
       <header className="border-b border-zinc-800 bg-zinc-950">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -126,6 +126,23 @@ export default function AdminPage() {
               <div>
                 <h3 className="font-semibold text-white">Ürünler</h3>
                 <p className="text-sm text-zinc-400">Mağaza yönetimi</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/planlar"
+            className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1"
+          >
+            <div className="flex items-center gap-4">
+              <div className="bg-purple-500/10 p-3 rounded-lg">
+                <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Planlar</h3>
+                <p className="text-sm text-zinc-400">Plan yönetimi</p>
               </div>
             </div>
           </Link>
@@ -181,22 +198,7 @@ export default function AdminPage() {
             </div>
           </Link>
 
-          <Link
-            href="/admin/muzik-yukle"
-            className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-red-500/10 hover:-translate-y-1"
-          >
-            <div className="flex items-center gap-4">
-              <div className="bg-purple-500/10 p-3 rounded-lg">
-                <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="font-semibold text-white">Müzik Kütüphanesi</h3>
-                <p className="text-sm text-zinc-400">Müzik yönetimi</p>
-              </div>
-            </div>
-          </Link>
+
         </div>
 
         {/* Dashboard Overview */}
