@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useAuth } from "../hooks/useAuth";
 import UserMenu from "./UserMenu";
 import MobileMenu from "./MobileMenu";
@@ -11,11 +12,16 @@ import SignUpModal from "./SignUpModal";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 
 export default function Header() {
+  const pathname = usePathname();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
   const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const { user, loading, signOut } = useAuth();
+
+  if (pathname?.startsWith('/dashboard/market')) {
+    return null;
+  }
 
   return (
     <>

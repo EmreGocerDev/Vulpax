@@ -38,13 +38,52 @@ export async function POST(request: Request) {
       // Ödeme Başarılı
       console.log(`Payment successful for order: ${merchant_oid}`);
       
-      const { error } = await supabase
+      // 1. Fetch Order to get Plan ID
+      const { data: order, error: orderFetchError } = await supabase
         .from('orders')
-        .update({ status: 'success', updated_at: new Date().toISOString() })
+        .select('id, plan_id, user_id')
+        .eq('merchant_oid', merchant_oid)
+        .single();
+      
+      if (orderFetchError || !order) {
+          console.error("Order not found for callback:", merchant_oid);
+          return new NextResponse("OK");
+      }
+
+      // 2. Fetch Plan to get Interval
+      const { data: plan, error: planFetchError } = await supabase
+        .from('plans')
+        .select('interval, name')
+        .eq('id', order.plan_id)
+        .single();
+
+      let expiryDate = new Date();
+      if (plan && plan.interval === 'yearly') {
+          expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      } else {
+          // Default to monthly
+          expiryDate.setMonth(expiryDate.getMonth() + 1);
+      }
+
+      // 3. Update Order
+      const { error: updateError } = await supabase
+        .from('orders')
+        .update({ 
+            status: 'success', 
+            updated_at: new Date().toISOString(),
+            expiry_date: expiryDate.toISOString()
+        })
         .eq('merchant_oid', merchant_oid);
 
-      if (error) {
-        console.error("Error updating order status:", error);
+      if (updateError) {
+        console.error("Error updating order:", updateError);
+      } else {
+          console.log(`Order ${merchant_oid} updated. Expiry: ${expiryDate.toISOString()}`);
+      }
+
+      // 4. Legacy Market Access (Keep existing logic just in case)
+      if (plan && plan.name.includes('Market')) {
+         await supabase.from('profiles').update({ has_market_access: true }).eq('user_id', order.user_id);
       }
 
     } else {

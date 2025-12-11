@@ -13,6 +13,7 @@ interface Plan {
   price: number;
   features: string[] | null;
   is_active: boolean;
+  interval: 'monthly' | 'yearly';
 }
 
 export default function PlansAdminPage() {
@@ -26,6 +27,7 @@ export default function PlansAdminPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [interval, setInterval] = useState("monthly");
   const [features, setFeatures] = useState(""); // Newline separated
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function PlansAdminPage() {
         .order('price', { ascending: true });
 
       if (error) throw error;
-      setPlans(data || []);
+      setPlans(data as any || []);
     } catch (error) {
       console.error('Error fetching plans:', error);
     } finally {
@@ -60,6 +62,7 @@ export default function PlansAdminPage() {
       name,
       description,
       price: parseFloat(price),
+      interval,
       features: featureArray,
     };
 
@@ -90,6 +93,7 @@ export default function PlansAdminPage() {
     setName(plan.name);
     setDescription(plan.description || "");
     setPrice(plan.price.toString());
+    setInterval(plan.interval || "monthly");
     setFeatures(plan.features ? plan.features.join('\n') : "");
   };
 
@@ -115,6 +119,7 @@ export default function PlansAdminPage() {
     setName("");
     setDescription("");
     setPrice("");
+    setInterval("monthly");
     setFeatures("");
   };
 
@@ -174,6 +179,17 @@ export default function PlansAdminPage() {
                   />
                 </div>
                 <div>
+                  <label className="block text-sm text-zinc-400 mb-1">Periyot</label>
+                  <select
+                    value={interval}
+                    onChange={(e) => setInterval(e.target.value)}
+                    className="w-full bg-zinc-800 border border-zinc-700 p-2 rounded text-white"
+                  >
+                    <option value="monthly">Aylık</option>
+                    <option value="yearly">Yıllık</option>
+                  </select>
+                </div>
+                <div>
                   <label className="block text-sm text-zinc-400 mb-1">Özellikler (Her satıra bir özellik)</label>
                   <textarea
                     value={features}
@@ -212,7 +228,7 @@ export default function PlansAdminPage() {
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-xl font-bold text-white">{plan.name}</h3>
                       <span className="bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded text-sm">
-                        {plan.price.toLocaleString('tr-TR')} TL
+                        {plan.price.toLocaleString('tr-TR')} TL / {plan.interval === 'yearly' ? 'Yıl' : 'Ay'}
                       </span>
                     </div>
                     <p className="text-zinc-400 text-sm mb-3">{plan.description}</p>

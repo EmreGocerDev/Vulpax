@@ -109,7 +109,7 @@ export default function ProfilPage() {
           application:applications(*)
         `)
         .eq('user_id', user.id)
-        .eq('status', 'success')
+        .in('status', ['success', 'pending'])
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -480,7 +480,7 @@ export default function ProfilPage() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                Satın Alınanlar
+                Uygulamalarım
               </div>
             </button>
           </div>
@@ -947,24 +947,51 @@ export default function ProfilPage() {
                           <div className="flex-1 flex flex-col justify-between">
                             <div>
                               <h3 className="font-bold text-lg mb-1 line-clamp-1">{title}</h3>
-                              <p className="text-sm text-zinc-400">
-                                {typeLabel} • {new Date(order.created_at).toLocaleDateString('tr-TR')}
-                              </p>
+                              <div className="text-sm text-zinc-400">
+                                <p>{typeLabel} • {new Date(order.created_at).toLocaleDateString('tr-TR')}</p>
+                                {isPlan && order.expiry_date && order.status === 'success' && (
+                                    <p className="text-yellow-500 text-xs mt-0.5">
+                                        Bitiş: {new Date(order.expiry_date).toLocaleDateString('tr-TR')} 
+                                        <span className="ml-1 opacity-80">
+                                            ({Math.max(0, Math.ceil((new Date(order.expiry_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} gün kaldı)
+                                        </span>
+                                    </p>
+                                )}
+                              </div>
                             </div>
                             <div className="flex items-center justify-between mt-2">
-                              <span className="text-green-500 font-semibold">{order.amount} ₺</span>
-                              <button 
-                                onClick={() => {
-                                  setSelectedOrder(order);
-                                  setShowReceipt(true);
-                                }}
-                                className="text-xs bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1"
-                              >
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                Dekont
-                              </button>
+                              <div className="flex flex-col">
+                                <span className="text-green-500 font-semibold">{order.amount} ₺</span>
+                                {order.status === 'pending' && (
+                                    <span className="text-xs text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded mt-1 w-fit">Ödeme Bekleniyor</span>
+                                )}
+                              </div>
+                              
+                              {order.status === 'success' && (
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={() => router.push('/dashboard')}
+                                        className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+                                    >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
+                                        Uygulamaya Git
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                        setSelectedOrder(order);
+                                        setShowReceipt(true);
+                                        }}
+                                        className="text-xs bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+                                    >
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Dekont
+                                    </button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

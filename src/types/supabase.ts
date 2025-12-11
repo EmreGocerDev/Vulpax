@@ -97,6 +97,7 @@ export interface Database {
           status: string
           created_at: string
           updated_at: string
+          expiry_date: string | null
         }
         Insert: {
           id?: string
@@ -109,6 +110,7 @@ export interface Database {
           status?: string
           created_at?: string
           updated_at?: string
+          expiry_date?: string | null
         }
         Update: {
           id?: string
@@ -121,6 +123,7 @@ export interface Database {
           status?: string
           created_at?: string
           updated_at?: string
+          expiry_date?: string | null
         }
         Relationships: [
           {
@@ -155,12 +158,37 @@ export interface Database {
       music: AnyTable
       music_library: AnyTable
       contact_messages: AnyTable
+      market_customers: AnyTable
+      market_products: AnyTable
+      market_purchase_items: AnyTable
+      market_purchases: AnyTable
+      market_sale_items: AnyTable
+      market_sales: AnyTable
+      market_settings: AnyTable
+      market_stock_movements: AnyTable
+      market_suppliers: AnyTable
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      complete_market_sale: {
+        Args: {
+          p_customer_id: string | null
+          p_payment_method: string
+          p_items: Json
+          p_discount_amount?: number
+        }
+        Returns: string
+      }
+      complete_market_purchase: {
+        Args: {
+          p_supplier_id: string | null
+          p_items: Json
+          p_document_no?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

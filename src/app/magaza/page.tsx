@@ -32,6 +32,8 @@ export default function StorePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasMarketAccess, setHasMarketAccess] = useState(false);
+  const [activePlanIds, setActivePlanIds] = useState<string[]>([]);
   
   // Purchase Modal State
   const [selectedItem, setSelectedItem] = useState<{ type: 'product' | 'plan', item: Product | Plan, merchant_oid: string } | null>(null);
@@ -40,6 +42,50 @@ export default function StorePage() {
   useEffect(() => {
     fetchStoreItems();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      checkMarketAccess();
+      fetchActiveOrders();
+    }
+  }, [user]);
+
+  const fetchActiveOrders = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('orders')
+      .select('plan_id, status, expiry_date')
+      .eq('user_id', user.id)
+      .in('status', ['success', 'pending']); 
+    
+    if (data) {
+      const activeIds = data
+        .filter((order: any) => {
+          if (order.status === 'pending') return true;
+          if (order.status === 'success') {
+            if (!order.expiry_date) return true;
+            return new Date(order.expiry_date) > new Date();
+          }
+          return false;
+        })
+        .map((order: any) => order.plan_id);
+
+      setActivePlanIds(activeIds);
+    }
+  };
+
+  const checkMarketAccess = async () => {
+    if (!user) return;
+    const { data } = await supabase
+        .from('profiles')
+        .select('has_market_access')
+        .eq('user_id', user.id)
+        .single();
+    if (data?.has_market_access) {
+        setHasMarketAccess(true);
+    }
+  };
 
   const fetchStoreItems = async () => {
     try {
@@ -165,7 +211,13 @@ export default function StorePage() {
           <section>
             <h2 className="text-3xl font-bold mb-8 border-l-4 border-purple-600 pl-4">Planlar</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {plans.map((plan) => (
+              {plans.map((plan) => {
+                const isOwned = activePlanIds.includes(plan.id);
+                const hasAnyActivePlan = activePlanIds.length > 0;
+                const isMarketPlan = plan.name.includes('Market');
+                const showGoToPanel = isMarketPlan && hasMarketAccess;
+
+                return (
                 <div key={plan.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-8 hover:border-purple-500/50 transition-all duration-300 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <svg className="w-32 h-32 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
@@ -192,13 +244,26 @@ export default function StorePage() {
                   </div>
 
                   <button
-                    onClick={() => handleBuyClick('plan', plan)}
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded transition-colors"
+                    disabled={!showGoToPanel && hasAnyActivePlan}
+                    onClick={() => {
+                      if (showGoToPanel) {
+                        window.location.href = '/dashboard/market';
+                      } else {
+                        handleBuyClick('plan', plan);
+                      }
+                    }}
+                    className={`w-full font-bold py-3 rounded transition-colors ${
+                      showGoToPanel
+                        ? 'bg-green-600 hover:bg-green-700 text-white'
+                        : hasAnyActivePlan
+                            ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
+                            : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    }`}
                   >
-                    PLAN SEÇ
+                    {showGoToPanel ? 'PANELE GİT' : isOwned ? 'SATIN ALINDI' : hasAnyActivePlan ? 'MEVCUT PLANINIZ VAR' : 'PLAN SEÇ'}
                   </button>
                 </div>
-              ))}
+              )})}
             </div>
           </section>
         )}
