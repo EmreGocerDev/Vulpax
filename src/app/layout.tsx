@@ -4,7 +4,6 @@ import "./globals.css";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import SocialFixed from "../components/SocialFixed";
 import MouseTracker from "./components/MouseTracker";
 import "../components/SocialFixed.css";
 
@@ -90,7 +89,6 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
-        <SocialFixed />
         <MouseTracker />
       </body>
     </html>

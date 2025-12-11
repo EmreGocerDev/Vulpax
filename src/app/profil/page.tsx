@@ -970,7 +970,7 @@ export default function ProfilPage() {
                               {order.status === 'success' && (
                                 <div className="flex gap-2">
                                     <button 
-                                        onClick={() => router.push('/dashboard')}
+                                        onClick={() => router.push('/dashboard/market')}
                                         className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1"
                                     >
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

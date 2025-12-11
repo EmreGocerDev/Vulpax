@@ -15,6 +15,7 @@ interface Product {
   stock_quantity: number;
   image_url: string | null;
   category_id: string;
+  critical_stock_level: number;
 }
 
 export default function ProductsPage() {
@@ -22,6 +23,7 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -39,6 +41,23 @@ export default function ProductsPage() {
     setLoading(false);
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('market_products')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      fetchProducts();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Ürün silinirken bir hata oluştu.');
+    }
+  };
+
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     p.barcode?.includes(searchQuery) ||
@@ -50,7 +69,10 @@ export default function ProductsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Ürün Yönetimi</h1>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setEditingProduct(null);
+            setIsModalOpen(true);
+          }}
           className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <Plus size={20} />
@@ -88,7 +110,7 @@ export default function ProductsPage() {
               {filteredProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4 flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-white/10 rounded-lg overflow-hidden relative flex-shrink-0">
+                    <div className="w-10 h-10 bg-white/10 rounded-lg overflow-hidden relative shrink-0">
                       {product.image_url ? (
                         <Image src={product.image_url} alt={product.name} fill className="object-cover" />
                       ) : (
@@ -105,7 +127,7 @@ export default function ProductsPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      product.stock_quantity < 10 ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'
+                      product.stock_quantity < (product.critical_stock_level || 10) ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'
                     }`}>
                       {product.stock_quantity} Adet
                     </span>
@@ -114,10 +136,19 @@ export default function ProductsPage() {
                   <td className="px-6 py-4 text-white font-medium">{product.sell_price} ₺</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="p-2 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors">
+                      <button 
+                        onClick={() => {
+                          setEditingProduct(product);
+                          setIsModalOpen(true);
+                        }}
+                        className="p-2 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                      >
                         <Edit size={16} />
                       </button>
-                      <button className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-500 transition-colors">
+                      <button 
+                        onClick={() => handleDelete(product.id)}
+                        className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-500 transition-colors"
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -137,22 +168,26 @@ export default function ProductsPage() {
       </div>
 
       {isModalOpen && (
-        <AddProductModal onClose={() => setIsModalOpen(false)} onSuccess={fetchProducts} />
+        <ProductModal 
+          product={editingProduct}
+          onClose={() => setIsModalOpen(false)} 
+          onSuccess={fetchProducts} 
+        />
       )}
     </div>
   );
 }
 
-function AddProductModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
+function ProductModal({ product, onClose, onSuccess }: { product: Product | null, onClose: () => void, onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    barcode: '',
-    sku: '',
-    buy_price: '',
-    sell_price: '',
-    stock_quantity: '',
-    critical_stock_level: '10'
+    name: product?.name || '',
+    barcode: product?.barcode || '',
+    sku: product?.sku || '',
+    buy_price: product?.buy_price?.toString() || '',
+    sell_price: product?.sell_price?.toString() || '',
+    stock_quantity: product?.stock_quantity?.toString() || '',
+    critical_stock_level: product?.critical_stock_level?.toString() || '10'
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -160,26 +195,39 @@ function AddProductModal({ onClose, onSuccess }: { onClose: () => void, onSucces
     setLoading(true);
 
     try {
-      const { error } = await supabase
-        .from('market_products')
-        .insert([{
-          name: formData.name,
-          barcode: formData.barcode || null,
-          sku: formData.sku || null,
-          buy_price: parseFloat(formData.buy_price) || 0,
-          sell_price: parseFloat(formData.sell_price) || 0,
-          stock_quantity: parseFloat(formData.stock_quantity) || 0,
-          critical_stock_level: parseFloat(formData.critical_stock_level) || 10,
-          is_active: true
-        }]);
+      const productData = {
+        name: formData.name,
+        barcode: formData.barcode || null,
+        sku: formData.sku || null,
+        buy_price: parseFloat(formData.buy_price) || 0,
+        sell_price: parseFloat(formData.sell_price) || 0,
+        stock_quantity: parseFloat(formData.stock_quantity) || 0,
+        critical_stock_level: parseFloat(formData.critical_stock_level) || 10,
+        is_active: true
+      };
 
-      if (error) throw error;
+      if (product) {
+        // Update existing product
+        const { error } = await supabase
+          .from('market_products')
+          .update(productData)
+          .eq('id', product.id);
+        
+        if (error) throw error;
+      } else {
+        // Insert new product
+        const { error } = await supabase
+          .from('market_products')
+          .insert([productData]);
+        
+        if (error) throw error;
+      }
 
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error adding product:', error);
-      alert('Ürün eklenirken bir hata oluştu.');
+      console.error('Error saving product:', error);
+      alert('Ürün kaydedilirken bir hata oluştu.');
     } finally {
       setLoading(false);
     }
@@ -189,7 +237,7 @@ function AddProductModal({ onClose, onSuccess }: { onClose: () => void, onSucces
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="bg-zinc-900 border border-white/10 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <h2 className="text-xl font-bold text-white">Yeni Ürün Ekle</h2>
+          <h2 className="text-xl font-bold text-white">{product ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}</h2>
           <button onClick={onClose} className="text-zinc-400 hover:text-white">
             <X size={24} />
           </button>
@@ -253,6 +301,15 @@ function AddProductModal({ onClose, onSuccess }: { onClose: () => void, onSucces
                 className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-red-600 outline-none"
                 value={formData.sell_price}
                 onChange={e => setFormData({...formData, sell_price: e.target.value})}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-400">Kritik Stok Seviyesi</label>
+              <input
+                type="number"
+                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-red-600 outline-none"
+                value={formData.critical_stock_level}
+                onChange={e => setFormData({...formData, critical_stock_level: e.target.value})}
               />
             </div>
           </div>
