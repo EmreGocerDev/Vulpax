@@ -66,7 +66,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/#contact" className="hover:text-[#BAFFFF] transition-colors">
+                <Link href="/iletisim" className="hover:text-[#BAFFFF] transition-colors">
                   İletişim
                 </Link>
               </li>
@@ -92,6 +92,15 @@ export default function Footer() {
                 <a href="tel:+905070263185" className="hover:text-[#BAFFFF] transition-colors">
                   0507 026 31 85
                 </a>
+              </li>
+              <li className="flex items-start gap-2">
+                <svg className="w-5 h-5 mt-0.5 shrink-0 text-[#BAFFFF]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-zinc-400">
+                  FENERBAHÇE MAH. İĞRİP SK. NO: 13 İÇ KAPI NO: 1 KADIKÖY/ İSTANBUL
+                </span>
               </li>
             </ul>
           </div>

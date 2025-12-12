@@ -33,6 +33,7 @@ export default function ProductsPage() {
     const { data, error } = await supabase
       .from('market_products')
       .select('*')
+      .eq('is_active', true)
       .order('created_at', { ascending: false });
     
     if (data) {
@@ -47,7 +48,7 @@ export default function ProductsPage() {
     try {
       const { error } = await supabase
         .from('market_products')
-        .delete()
+        .update({ is_active: false })
         .eq('id', id);
 
       if (error) throw error;

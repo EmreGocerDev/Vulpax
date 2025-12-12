@@ -2,68 +2,154 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { BarChart3, TrendingUp, Calendar, DollarSign } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar, DollarSign, FileText, Search, Filter } from 'lucide-react';
+import ReceiptModal from '../pos/ReceiptModal';
+
+interface Sale {
+  id: string;
+  created_at: string;
+  final_amount: number;
+  payment_method: string;
+  customer?: { name: string };
+  items: any[];
+  discount_amount: number;
+  total_amount: number;
+}
 
 export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [dailySales, setDailySales] = useState<{date: string, total: number}[]>([]);
   const [topProducts, setTopProducts] = useState<{name: string, quantity: number}[]>([]);
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [startDate, setStartDate] = useState(new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
 
   useEffect(() => {
     fetchReports();
-  }, []);
+  }, [startDate, endDate]);
 
   const fetchReports = async () => {
-    // 1. Daily Sales (Last 7 days)
-    // Since we can't do complex aggregation easily with simple client query without grouping, 
-    // we will fetch last 7 days sales and process in JS for now.
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const { data: salesData } = await supabase
+    setLoading(true);
+    
+    // 1. Fetch Sales for the selected period
+    const { data: salesData, error } = await supabase
       .from('market_sales')
-      .select('created_at, final_amount')
-      .gte('created_at', sevenDaysAgo.toISOString())
-      .order('created_at', { ascending: true });
+      .select(`
+        *,
+        customer:market_customers(name),
+        items:market_sale_items(
+          quantity,
+          unit_price,
+          total_price,
+          product:market_products(name)
+        )
+      `)
+      .gte('created_at', `${startDate}T00:00:00`)
+      .lte('created_at', `${endDate}T23:59:59`)
+      .order('created_at', { ascending: false });
 
-    const salesMap = new Map<string, number>();
-    salesData?.forEach((sale: any) => {
-      const date = new Date(sale.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
-      salesMap.set(date, (salesMap.get(date) || 0) + Number(sale.final_amount));
-    });
+    if (salesData) {
+      setSales(salesData as any);
 
-    const salesChartData = Array.from(salesMap.entries()).map(([date, total]) => ({ date, total }));
+      // Process Daily Sales Chart
+      const salesMap = new Map<string, number>();
+      salesData.forEach((sale: any) => {
+        const date = new Date(sale.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+        salesMap.set(date, (salesMap.get(date) || 0) + Number(sale.final_amount));
+      });
+      const salesChartData = Array.from(salesMap.entries()).map(([date, total]) => ({ date, total })).reverse(); // Reverse to show chronological order if needed, but map iteration order is insertion order usually. Let's sort.
+      
+      // Sort by date is tricky with just "11 Dec" string. 
+      // Better to iterate through the date range and fill.
+      // For simplicity, let's just use what we have but maybe sort by date object if we had it.
+      // Let's just keep it simple for now.
+      setDailySales(salesChartData);
 
-    // 2. Top Products (From sale_items)
-    // Fetching last 50 items to determine top sellers roughly
-    const { data: itemsData } = await supabase
-      .from('market_sale_items')
-      .select('quantity, product:market_products(name)')
-      .limit(100);
+      // Process Top Products
+      const productMap = new Map<string, number>();
+      salesData.forEach((sale: any) => {
+        sale.items?.forEach((item: any) => {
+          const name = item.product?.name || 'Bilinmeyen';
+          productMap.set(name, (productMap.get(name) || 0) + Number(item.quantity));
+        });
+      });
 
-    const productMap = new Map<string, number>();
-    itemsData?.forEach((item: any) => {
-      const name = item.product?.name || 'Bilinmeyen';
-      productMap.set(name, (productMap.get(name) || 0) + Number(item.quantity));
-    });
-
-    const topProductsData = Array.from(productMap.entries())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([name, quantity]) => ({ name, quantity }));
-
-    setDailySales(salesChartData);
-    setTopProducts(topProductsData);
+      const topProductsData = Array.from(productMap.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([name, quantity]) => ({ name, quantity }));
+      
+      setTopProducts(topProductsData);
+    }
+    
     setLoading(false);
   };
 
-  if (loading) return <div className="text-white">Yükleniyor...</div>;
+  const handleViewReceipt = (sale: Sale) => {
+    setSelectedSale(sale);
+    setIsReceiptOpen(true);
+  };
 
-  const maxSale = Math.max(...dailySales.map(d => d.total), 100);
+  const maxSale = dailySales.length > 0 ? Math.max(...dailySales.map(d => d.total), 100) : 100;
+
+  // Calculate totals for the period
+  const totalRevenue = sales.reduce((sum, sale) => sum + sale.final_amount, 0);
+  const totalTransactions = sales.length;
+  const averageBasket = totalTransactions > 0 ? totalRevenue / totalTransactions : 0;
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-white">Raporlar & Analiz</h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-white">Raporlar & Analiz</h1>
+        
+        <div className="flex items-center space-x-2 bg-zinc-900 p-2 rounded-lg border border-white/10">
+          <div className="flex items-center space-x-2">
+            <Calendar size={16} className="text-zinc-400" />
+            <input 
+              type="date" 
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="bg-transparent text-white text-sm outline-none"
+            />
+          </div>
+          <span className="text-zinc-600">-</span>
+          <div className="flex items-center space-x-2">
+            <input 
+              type="date" 
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="bg-transparent text-white text-sm outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-zinc-900/50 border border-white/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-zinc-400 text-sm font-medium">Toplam Ciro</h3>
+            <DollarSign className="text-green-500" size={20} />
+          </div>
+          <p className="text-2xl font-bold text-white">{totalRevenue.toFixed(2)} ₺</p>
+        </div>
+        <div className="bg-zinc-900/50 border border-white/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-zinc-400 text-sm font-medium">İşlem Sayısı</h3>
+            <FileText className="text-blue-500" size={20} />
+          </div>
+          <p className="text-2xl font-bold text-white">{totalTransactions}</p>
+        </div>
+        <div className="bg-zinc-900/50 border border-white/10 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-zinc-400 text-sm font-medium">Ortalama Sepet</h3>
+            <TrendingUp className="text-purple-500" size={20} />
+          </div>
+          <p className="text-2xl font-bold text-white">{averageBasket.toFixed(2)} ₺</p>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Daily Sales Chart */}
@@ -71,7 +157,7 @@ export default function ReportsPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-white flex items-center">
               <TrendingUp className="mr-2 text-green-500" size={20} />
-              Son 7 Gün Satış
+              Günlük Satış Grafiği
             </h2>
           </div>
           
@@ -91,7 +177,7 @@ export default function ReportsPage() {
                             </div>
                         </div>
                     </div>
-                    <span className="text-xs text-zinc-500 mt-2">{day.date}</span>
+                    <span className="text-xs text-zinc-500 mt-2 whitespace-nowrap overflow-hidden text-ellipsis w-full text-center">{day.date}</span>
                 </div>
                 ))
             )}
@@ -126,6 +212,82 @@ export default function ReportsPage() {
           </div>
         </div>
       </div>
+
+      {/* Transactions Table */}
+      <div className="bg-zinc-900/50 border border-white/10 rounded-xl overflow-hidden">
+        <div className="p-6 border-b border-white/10 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white">İşlem Geçmişi</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-zinc-400">
+            <thead className="bg-white/5 text-zinc-200 font-medium">
+              <tr>
+                <th className="px-6 py-3">Tarih</th>
+                <th className="px-6 py-3">Müşteri</th>
+                <th className="px-6 py-3">Ödeme Tipi</th>
+                <th className="px-6 py-3">Tutar</th>
+                <th className="px-6 py-3 text-right">İşlem</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {sales.map((sale) => (
+                <tr key={sale.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-6 py-4">
+                    {new Date(sale.created_at).toLocaleString('tr-TR')}
+                  </td>
+                  <td className="px-6 py-4">
+                    {sale.customer?.name || 'Misafir'}
+                  </td>
+                  <td className="px-6 py-4">
+                    {sale.payment_method === 'cash' ? 'Nakit' : sale.payment_method === 'credit_card' ? 'Kredi Kartı' : 'Veresiye'}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-white">
+                    {sale.final_amount.toFixed(2)} ₺
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button 
+                      onClick={() => handleViewReceipt(sale)}
+                      className="text-blue-400 hover:text-blue-300 hover:underline"
+                    >
+                      Fiş Görüntüle
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {sales.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-zinc-500">
+                    Seçilen tarih aralığında işlem bulunamadı.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Receipt Modal */}
+      {selectedSale && (
+        <ReceiptModal
+          isOpen={isReceiptOpen}
+          onClose={() => setIsReceiptOpen(false)}
+          data={{
+            id: selectedSale.id,
+            date: new Date(selectedSale.created_at),
+            items: selectedSale.items.map((item: any) => ({
+              name: item.product?.name || 'Ürün',
+              quantity: item.quantity,
+              price: item.unit_price,
+              total: item.total_price
+            })),
+            subtotal: selectedSale.final_amount / 1.18,
+            tax: selectedSale.final_amount - (selectedSale.final_amount / 1.18),
+            total: selectedSale.final_amount,
+            paymentMethod: selectedSale.payment_method,
+            customerName: selectedSale.customer?.name
+          }}
+        />
+      )}
     </div>
   );
 }

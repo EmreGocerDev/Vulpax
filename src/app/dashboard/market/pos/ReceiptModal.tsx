@@ -1,7 +1,8 @@
 'use client';
 
 import { X, Printer } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 
 interface ReceiptItem {
   name: string;
@@ -27,8 +28,50 @@ interface ReceiptModalProps {
   data: ReceiptData | null;
 }
 
+interface MarketSettings {
+  store_name: string;
+  address: string;
+  phone: string;
+  receipt_header: string;
+  receipt_footer: string;
+}
+
 export default function ReceiptModal({ isOpen, onClose, data }: ReceiptModalProps) {
   const receiptRef = useRef<HTMLDivElement>(null);
+  const [settings, setSettings] = useState<MarketSettings>({
+    store_name: 'VULPAX MARKET',
+    address: '',
+    phone: '',
+    receipt_header: '',
+    receipt_footer: ''
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchSettings();
+    }
+  }, [isOpen]);
+
+  const fetchSettings = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('market_settings')
+      .select('store_name, address, phone, receipt_header, receipt_footer')
+      .eq('user_id', user.id)
+      .single();
+    
+    if (data) {
+      setSettings({
+        store_name: data.store_name || 'VULPAX MARKET',
+        address: data.address || '',
+        phone: data.phone || '',
+        receipt_header: data.receipt_header || '',
+        receipt_footer: data.receipt_footer || ''
+      });
+    }
+  };
 
   useEffect(() => {
     const handlePrint = (e: KeyboardEvent) => {
@@ -153,10 +196,10 @@ export default function ReceiptModal({ isOpen, onClose, data }: ReceiptModalProp
             className="w-[300px] bg-white p-4 border border-gray-100 shadow-sm text-xs font-mono leading-relaxed"
           >
             <div className="header">
-              <div className="store-name">VULPAX MARKET</div>
-              <div>Atatürk Cad. No:123</div>
-              <div>İstanbul, Türkiye</div>
-              <div>Tel: (0212) 555 00 00</div>
+              <div className="store-name">{settings.store_name}</div>
+              {settings.receipt_header && <div className="mb-2">{settings.receipt_header}</div>}
+              {settings.address && <div className="whitespace-pre-wrap">{settings.address}</div>}
+              {settings.phone && <div>Tel: {settings.phone}</div>}
             </div>
 
             <div className="divider"></div>
@@ -199,30 +242,15 @@ export default function ReceiptModal({ isOpen, onClose, data }: ReceiptModalProp
               </div>
             </div>
 
-            <div className="divider"></div>
-
-            <div className="footer">
-              <div>Bizi tercih ettiğiniz için teşekkürler!</div>
-              <div>Mali değeri yoktur. Bilgi fişidir.</div>
-            </div>
+            {settings.receipt_footer && (
+              <>
+                <div className="divider"></div>
+                <div className="footer">
+                  {settings.receipt_footer}
+                </div>
+              </>
+            )}
           </div>
-        </div>
-
-        {/* Modal Footer */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50 flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
-          >
-            Kapat
-          </button>
-          <button
-            onClick={handlePrintClick}
-            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-colors flex items-center gap-2"
-          >
-            <Printer size={16} />
-            Yazdır
-          </button>
         </div>
       </div>
     </div>

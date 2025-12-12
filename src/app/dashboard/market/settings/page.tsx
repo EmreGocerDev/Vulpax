@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Save, Store, Receipt, Percent } from 'lucide-react';
+import { Save, Store, Receipt, Percent, MapPin, Phone } from 'lucide-react';
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -10,6 +10,8 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState({
     id: '',
     store_name: '',
+    address: '',
+    phone: '',
     currency: 'TRY',
     tax_rate: 18,
     receipt_header: '',
@@ -21,9 +23,13 @@ export default function SettingsPage() {
   }, []);
 
   const fetchSettings = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
     const { data } = await supabase
       .from('market_settings')
       .select('*')
+      .eq('user_id', user.id)
       .single();
     
     if (data) {
@@ -37,11 +43,17 @@ export default function SettingsPage() {
     setSaving(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Kullanıcı bulunamadı');
+
       const { error } = await supabase
         .from('market_settings')
         .upsert({
+          user_id: user.id,
           id: settings.id || undefined,
           store_name: settings.store_name,
+          address: settings.address,
+          phone: settings.phone,
           currency: settings.currency,
           tax_rate: settings.tax_rate,
           receipt_header: settings.receipt_header,
@@ -73,17 +85,48 @@ export default function SettingsPage() {
             <h2>Genel Bilgiler</h2>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-zinc-400">Mağaza Adı</label>
-            <input
-              type="text"
-              className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-red-600 outline-none"
-              value={settings.store_name}
-              onChange={e => setSettings({...settings, store_name: e.target.value})}
-            />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-400">Mağaza Adı</label>
+              <input
+                type="text"
+                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-red-600 outline-none"
+                value={settings.store_name}
+                onChange={e => setSettings({...settings, store_name: e.target.value})}
+                placeholder="Örn: Vulpax Market"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+                <MapPin size={14} />
+                Adres
+              </label>
+              <textarea
+                rows={2}
+                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-red-600 outline-none resize-none"
+                value={settings.address || ''}
+                onChange={e => setSettings({...settings, address: e.target.value})}
+                placeholder="Örn: Atatürk Cad. No:123 İstanbul"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-400 flex items-center gap-2">
+                <Phone size={14} />
+                Telefon
+              </label>
+              <input
+                type="text"
+                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-red-600 outline-none"
+                value={settings.phone || ''}
+                onChange={e => setSettings({...settings, phone: e.target.value})}
+                placeholder="Örn: (0212) 555 00 00"
+              />
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 mt-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-zinc-400">Para Birimi</label>
               <select

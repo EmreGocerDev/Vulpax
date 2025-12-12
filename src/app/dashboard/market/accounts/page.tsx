@@ -21,6 +21,7 @@ export default function AccountsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
 
   useEffect(() => {
     fetchAccounts();
@@ -33,12 +34,31 @@ export default function AccountsPage() {
     const { data, error } = await supabase
       .from(table)
       .select('*')
+      .eq('is_active', true)
       .order('created_at', { ascending: false });
     
     if (data) {
       setAccounts(data as unknown as Account[]);
     }
     setLoading(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm(`Bu ${activeTab === 'customers' ? 'müşteriyi' : 'tedarikçiyi'} silmek istediğinize emin misiniz?`)) return;
+
+    try {
+      const table = activeTab === 'customers' ? 'market_customers' : 'market_suppliers';
+      const { error } = await supabase
+        .from(table)
+        .update({ is_active: false })
+        .eq('id', id);
+
+      if (error) throw error;
+      fetchAccounts();
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Silme işlemi sırasında bir hata oluştu.');
+    }
   };
 
   const filteredAccounts = accounts.filter(acc => 
@@ -52,7 +72,10 @@ export default function AccountsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Cari Hesaplar</h1>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            setEditingAccount(null);
+            setIsModalOpen(true);
+          }}
           className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <Plus size={20} />
@@ -152,10 +175,19 @@ export default function AccountsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="p-2 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors">
+                      <button 
+                        onClick={() => {
+                          setEditingAccount(account);
+                          setIsModalOpen(true);
+                        }}
+                        className="p-2 hover:bg-white/10 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                      >
                         <Edit size={16} />
                       </button>
-                      <button className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-500 transition-colors">
+                      <button 
+                        onClick={() => handleDelete(account.id)}
+                        className="p-2 hover:bg-red-500/10 rounded-lg text-zinc-400 hover:text-red-500 transition-colors"
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -175,8 +207,9 @@ export default function AccountsPage() {
       </div>
 
       {isModalOpen && (
-        <AddAccountModal 
+        <AccountModal 
           type={activeTab} 
+          account={editingAccount}
           onClose={() => setIsModalOpen(false)} 
           onSuccess={fetchAccounts} 
         />
@@ -185,14 +218,14 @@ export default function AccountsPage() {
   );
 }
 
-function AddAccountModal({ type, onClose, onSuccess }: { type: 'customers' | 'suppliers', onClose: () => void, onSuccess: () => void }) {
+function AccountModal({ type, account, onClose, onSuccess }: { type: 'customers' | 'suppliers', account: Account | null, onClose: () => void, onSuccess: () => void }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    contact_name: '',
-    phone: '',
-    email: '',
-    address: ''
+    name: account?.name || '',
+    contact_name: account?.contact_name || '',
+    phone: account?.phone || '',
+    email: account?.email || '',
+    address: account?.address || ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -201,20 +234,33 @@ function AddAccountModal({ type, onClose, onSuccess }: { type: 'customers' | 'su
 
     try {
       const table = type === 'customers' ? 'market_customers' : 'market_suppliers';
-      const { error } = await supabase
-        .from(table)
-        .insert([{
-          ...formData,
-          balance: 0
-        }]);
-
-      if (error) throw error;
+      
+      if (account) {
+        // Update
+        const { error } = await supabase
+          .from(table)
+          .update(formData)
+          .eq('id', account.id);
+        
+        if (error) throw error;
+      } else {
+        // Insert
+        const { error } = await supabase
+          .from(table)
+          .insert([{
+            ...formData,
+            balance: 0,
+            is_active: true
+          }]);
+        
+        if (error) throw error;
+      }
 
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error adding account:', error);
-      alert('Kayıt eklenirken bir hata oluştu.');
+      console.error('Error saving account:', error);
+      alert('Kayıt işlemi sırasında bir hata oluştu.');
     } finally {
       setLoading(false);
     }
@@ -225,7 +271,7 @@ function AddAccountModal({ type, onClose, onSuccess }: { type: 'customers' | 'su
       <div className="bg-zinc-900 border border-white/10 rounded-xl w-full max-w-lg">
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <h2 className="text-xl font-bold text-white">
-            Yeni {type === 'customers' ? 'Müşteri' : 'Tedarikçi'} Ekle
+            {account ? `${type === 'customers' ? 'Müşteriyi' : 'Tedarikçiyi'} Düzenle` : `Yeni ${type === 'customers' ? 'Müşteri' : 'Tedarikçi'} Ekle`}
           </h2>
           <button onClick={onClose} className="text-zinc-400 hover:text-white">
             <X size={24} />

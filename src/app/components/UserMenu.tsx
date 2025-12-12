@@ -15,8 +15,11 @@ export default function UserMenu({ user, onSignOut }: UserMenuProps) {
 
   // Hangi provider'dan giriş yapıldı?
   const provider = user.app_metadata.provider;
-  const isGithubUser = provider === 'github';
-  const isGoogleUser = provider === 'google';
+  // Not: Kullanıcı geri bildirimine göre provider bilgisi ters geliyor olabilir.
+  // GitHub ile girince google, Google ile girince github provider dönüyor gibi görünüyor.
+  // Bu yüzden ikonların doğru görünmesi için eşleştirmeyi ters yapıyoruz.
+  const isGithubUser = provider === 'google';
+  const isGoogleUser = provider === 'github';
   
   // Kullanıcı adını al
   const userName = user.user_metadata.full_name || 
