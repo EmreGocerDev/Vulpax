@@ -16,7 +16,20 @@ export async function POST(request: Request) {
     // Initialize Supabase Admin Client
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey || '');
+    
+    if (!supabaseServiceKey) {
+        console.error("SUPABASE_SERVICE_ROLE_KEY is missing. Cannot update order status.");
+        return new NextResponse("OK");
+    }
+    
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Log callback attempt first
+    await supabase.from('paytr_logs').insert({
+      merchant_oid,
+      status: status || 'unknown',
+      payload: { merchant_oid, status, total_amount, hash, timestamp: new Date().toISOString() }
+    });
 
     const params = `${merchant_oid}${merchant_salt}${status}${total_amount}`;
     const token = crypto
@@ -25,29 +38,15 @@ export async function POST(request: Request) {
       .digest("base64");
 
     if (token !== hash) {
-      if (supabaseServiceKey) {
-        await supabase.from('paytr_logs').insert({
-          merchant_oid,
-          status: 'failed',
-          error_message: 'Bad Hash',
-          payload: { calculated_token: token, received_hash: hash, params }
-        });
-      }
+      await supabase.from('paytr_logs').insert({
+        merchant_oid,
+        status: 'failed',
+        error_message: 'Bad Hash',
+        payload: { calculated_token: token, received_hash: hash, params }
+      });
       console.error("PAYTR notification failed: bad hash", { merchant_oid, received_hash: hash });
       return new NextResponse("PAYTR notification failed: bad hash", { status: 400 });
     }
-    
-    if (!supabaseServiceKey) {
-        console.error("SUPABASE_SERVICE_ROLE_KEY is missing. Cannot update order status.");
-        return new NextResponse("OK");
-    }
-
-    // Log the callback attempt
-    await supabase.from('paytr_logs').insert({
-      merchant_oid,
-      status,
-      payload: { merchant_oid, status, total_amount, hash }
-    });
 
     if (status === "success") {
       // Ödeme Başarılı
