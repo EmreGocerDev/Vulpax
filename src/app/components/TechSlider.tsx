@@ -28,10 +28,10 @@ export default function TechSlider() {
   return (
     <section className="py-20 overflow-hidden relative">
       {/* Left Fade - Wider */}
-      <div className="absolute left-0 top-0 bottom-0 w-64 md:w-96 bg-gradient-to-r from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute left-0 top-0 bottom-0 w-24 md:w-96 bg-gradient-to-r from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
       
       {/* Right Fade - Wider */}
-      <div className="absolute right-0 top-0 bottom-0 w-64 md:w-96 bg-gradient-to-l from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-24 md:w-96 bg-gradient-to-l from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 mb-12 text-center">
         <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">

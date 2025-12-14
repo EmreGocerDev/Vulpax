@@ -25,9 +25,9 @@ export default function Header() {
 
   return (
     <>
-      <div className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4">
+      <div className="fixed top-4 md:top-6 left-0 right-0 z-50 flex justify-center px-4">
         <header className="border border-white/10 backdrop-blur-xl bg-black/20 w-full max-w-5xl shadow-2xl rounded-full">
-          <div className="px-6 py-3">
+          <div className="px-4 py-2 md:px-6 md:py-3">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3 group">
               <Image
@@ -51,6 +51,11 @@ export default function Header() {
               <Link href="/uygulamalar" className="text-sm text-white/80 hover:text-[#BAFFFF] transition-colors font-medium">
                 Uygulamalar
               </Link>
+              {!loading && user && (
+                <Link href="/profil?tab=purchases" className="text-sm text-white/80 hover:text-[#BAFFFF] transition-colors font-medium">
+                  Uygulamalarım
+                </Link>
+              )}
               {!loading && (
                 user ? (
                   <UserMenu user={user} onSignOut={signOut} />

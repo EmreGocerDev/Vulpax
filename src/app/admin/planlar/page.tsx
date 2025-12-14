@@ -132,7 +132,7 @@ export default function PlansAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-12">
+    <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-12">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Plan Yönetimi</h1>

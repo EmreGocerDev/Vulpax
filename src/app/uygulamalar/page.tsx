@@ -114,7 +114,7 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="min-h-screen text-white pt-32">
+    <div className="min-h-screen text-white pt-24 md:pt-32">
       {/* Header removed */}
       
       <LoginModal

@@ -33,7 +33,8 @@ export default function StorePage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMarketAccess, setHasMarketAccess] = useState(false);
-  const [activePlanIds, setActivePlanIds] = useState<string[]>([]);
+  const [ownedPlanIds, setOwnedPlanIds] = useState<string[]>([]);
+  const [pendingPlanIds, setPendingPlanIds] = useState<string[]>([]);
   
   // Purchase Modal State
   const [selectedItem, setSelectedItem] = useState<{ type: 'product' | 'plan', item: Product | Plan, merchant_oid: string } | null>(null);
@@ -60,9 +61,8 @@ export default function StorePage() {
       .in('status', ['success', 'pending']); 
     
     if (data) {
-      const activeIds = data
+      const owned = data
         .filter((order: any) => {
-          if (order.status === 'pending') return true;
           if (order.status === 'success') {
             if (!order.expiry_date) return true;
             return new Date(order.expiry_date) > new Date();
@@ -71,7 +71,12 @@ export default function StorePage() {
         })
         .map((order: any) => order.plan_id);
 
-      setActivePlanIds(activeIds);
+      const pending = data
+        .filter((order: any) => order.status === 'pending')
+        .map((order: any) => order.plan_id);
+
+      setOwnedPlanIds(owned);
+      setPendingPlanIds(pending);
     }
   };
 
@@ -142,11 +147,11 @@ export default function StorePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pt-32 pb-12">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold mb-4">MAĞAZA</h1>
-          <p className="text-zinc-400 text-lg">
+    <div className="min-h-screen bg-black text-white pt-24 md:pt-32 pb-12">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
+        <div className="text-center mb-12 md:mb-16">
+          <h1 className="text-3xl md:text-5xl font-bold mb-4">MAĞAZA</h1>
+          <p className="text-zinc-400 text-base md:text-lg">
             Yazılım ürünleri ve abonelik planları
           </p>
         </div>
@@ -212,8 +217,9 @@ export default function StorePage() {
             <h2 className="text-3xl font-bold mb-8 border-l-4 border-purple-600 pl-4">Planlar</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {plans.map((plan) => {
-                const isOwned = activePlanIds.includes(plan.id);
-                const hasAnyActivePlan = activePlanIds.length > 0;
+                const isOwned = ownedPlanIds.includes(plan.id);
+                const isPending = pendingPlanIds.includes(plan.id);
+                const hasAnyActivePlan = ownedPlanIds.length > 0;
                 const isMarketPlan = plan.name.includes('Market');
                 const showGoToPanel = isMarketPlan && hasMarketAccess;
 
@@ -228,7 +234,7 @@ export default function StorePage() {
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                   <div className="text-3xl font-bold text-purple-400 mb-6">
                     {plan.price.toLocaleString('tr-TR')} ₺
-                    <span className="text-sm text-zinc-500 font-normal ml-1">/ adet</span>
+                    <span className="text-sm text-zinc-500 font-normal ml-1">/ proje başına</span>
                   </div>
                   <p className="text-zinc-400 mb-6">{plan.description}</p>
                   
@@ -260,7 +266,7 @@ export default function StorePage() {
                             : 'bg-purple-600 hover:bg-purple-700 text-white'
                     }`}
                   >
-                    {showGoToPanel ? 'PANELE GİT' : isOwned ? 'SATIN ALINDI' : hasAnyActivePlan ? 'MEVCUT PLANINIZ VAR' : 'PLAN SEÇ'}
+                    {showGoToPanel ? 'PANELE GİT' : isOwned ? 'SATIN ALINDI' : hasAnyActivePlan ? 'MEVCUT PLANINIZ VAR' : 'SATIN AL'}
                   </button>
                 </div>
               )})}

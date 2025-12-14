@@ -246,7 +246,7 @@ export default function ReferencesAdminPage() {
         </div>
 
         {/* References Table */}
-        <div className="bg-zinc-900 border border-zinc-800 overflow-hidden">
+        <div className="bg-zinc-900 border border-zinc-800 overflow-x-auto">
           <table className="w-full">
             <thead className="bg-zinc-800">
               <tr>

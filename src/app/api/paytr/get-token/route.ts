@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     // PayTR POST redirect'i için API route kullanıyoruz
     const merchant_ok_url = `${origin}/api/payment-success`;
     const merchant_fail_url = `${origin}/api/payment-success`; // Başarısız da aynı yere gitsin, orada kontrol ediliyor
+    const merchant_callback_url = `${origin}/api/paytr/callback`; // PayTR'nin ödeme onayını göndereceği URL
 
     
     // Other params
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
     params.append("user_phone", user_phone);
     params.append("merchant_ok_url", merchant_ok_url);
     params.append("merchant_fail_url", merchant_fail_url);
+    params.append("merchant_callback_url", merchant_callback_url);
     params.append("timeout_limit", timeout_limit);
     params.append("currency", currency);
     params.append("test_mode", test_mode);

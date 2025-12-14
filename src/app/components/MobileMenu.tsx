@@ -64,6 +64,16 @@ export default function MobileMenu({ onLoginClick, user, onSignOut }: MobileMenu
               >
                 Uygulamalar
               </a>
+
+              {user && (
+                <a 
+                  href="/profil?tab=purchases" 
+                  className="text-zinc-300 hover:text-white hover:bg-white/5 px-4 py-3 rounded-xl transition-all"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Uygulamalarım
+                </a>
+              )}
               
               {user && user.id === 'd628cec7-7ebe-4dd7-9d0a-0a76fb091911' && (
                 <a 

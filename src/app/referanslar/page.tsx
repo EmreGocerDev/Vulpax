@@ -106,7 +106,7 @@ export default function ReferanslarPage() {
   }
 
   return (
-    <div className="min-h-screen text-white pt-32">
+    <div className="min-h-screen text-white pt-24 md:pt-32">
       {/* Header removed */}
 
       <main className="max-w-7xl mx-auto px-6 py-12">
@@ -209,13 +209,13 @@ export default function ReferanslarPage() {
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-4 text-white text-6xl hover:text-zinc-400 transition-colors z-10"
+                className="absolute left-4 text-white text-4xl md:text-6xl hover:text-zinc-400 transition-colors z-10"
               >
                 ‹
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-4 text-white text-6xl hover:text-zinc-400 transition-colors z-10"
+                className="absolute right-4 text-white text-4xl md:text-6xl hover:text-zinc-400 transition-colors z-10"
               >
                 ›
               </button>

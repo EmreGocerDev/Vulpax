@@ -66,7 +66,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="pt-24">
+    <div className="pt-24 md:pt-32">
       {/* Fixed Character Image - Desktop only */}
       <div className="hidden md:block fixed bottom-8 right-8 z-40 pointer-events-none">
         <Image

@@ -13,6 +13,11 @@ export async function POST(request: Request) {
     const merchant_key = "Ynk2qURAUxH5bC5G";
     const merchant_salt = "98CNTjAkbSTX7PWq";
 
+    // Initialize Supabase Admin Client
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey || '');
+
     const params = `${merchant_oid}${merchant_salt}${status}${total_amount}`;
     const token = crypto
       .createHmac("sha256", merchant_key)
@@ -20,19 +25,29 @@ export async function POST(request: Request) {
       .digest("base64");
 
     if (token !== hash) {
+      if (supabaseServiceKey) {
+        await supabase.from('paytr_logs').insert({
+          merchant_oid,
+          status: 'failed',
+          error_message: 'Bad Hash',
+          payload: { calculated_token: token, received_hash: hash, params }
+        });
+      }
+      console.error("PAYTR notification failed: bad hash", { merchant_oid, received_hash: hash });
       return new NextResponse("PAYTR notification failed: bad hash", { status: 400 });
     }
-
-    // Initialize Supabase Admin Client
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     
     if (!supabaseServiceKey) {
         console.error("SUPABASE_SERVICE_ROLE_KEY is missing. Cannot update order status.");
         return new NextResponse("OK");
     }
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Log the callback attempt
+    await supabase.from('paytr_logs').insert({
+      merchant_oid,
+      status,
+      payload: { merchant_oid, status, total_amount, hash }
+    });
 
     if (status === "success") {
       // Ödeme Başarılı
@@ -50,12 +65,19 @@ export async function POST(request: Request) {
           return new NextResponse("OK");
       }
 
-      // 2. Fetch Plan to get Interval
-      const { data: plan, error: planFetchError } = await supabase
-        .from('plans')
-        .select('interval, name')
-        .eq('id', order.plan_id)
-        .single();
+      // 2. Fetch Plan to get Interval (only if plan_id exists)
+      let plan = null;
+      if (order.plan_id) {
+        const { data: planData, error: planFetchError } = await supabase
+          .from('plans')
+          .select('interval, name')
+          .eq('id', order.plan_id)
+          .single();
+        
+        if (!planFetchError) {
+          plan = planData;
+        }
+      }
 
       let expiryDate = new Date();
       if (plan && plan.interval === 'yearly') {

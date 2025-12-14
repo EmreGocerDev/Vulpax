@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function DistanceSalesAgreementPage() {
   return (
-    <div className="pt-24">
+    <div className="pt-24 md:pt-32">
       {/* Fixed Character Image - Desktop only */}
       <div className="hidden md:block fixed bottom-8 right-8 z-40 pointer-events-none">
         <Image

@@ -70,7 +70,7 @@ function PaymentContent() {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4">
+    <div className="min-h-screen pt-24 md:pt-32 pb-20 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-8 text-center">
           GÜVENLİ <span className="text-red-500">ÖDEME</span>

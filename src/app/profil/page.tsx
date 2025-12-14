@@ -81,6 +81,15 @@ export default function ProfilPage() {
     }
   }, [user, loading, router]);
 
+  // URL'den tab parametresini oku
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab === 'purchases') {
+      setActiveTab('purchases');
+    }
+  }, []);
+
   useEffect(() => {
     if (user && activeTab === 'cards') {
       fetchSavedCards();
@@ -109,7 +118,7 @@ export default function ProfilPage() {
           application:applications(*)
         `)
         .eq('user_id', user.id)
-        .in('status', ['success', 'pending'])
+        .eq('status', 'success')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -415,7 +424,7 @@ export default function ProfilPage() {
   }
 
   return (
-    <div className="min-h-screen pt-32 pb-20 px-4">
+    <div className="min-h-screen pt-24 md:pt-32 pb-20 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="bg-black border border-zinc-800 rounded-sm overflow-visible">
           {/* SVG filters for decorative card surrounds (inserted once) */}
@@ -437,10 +446,10 @@ export default function ProfilPage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-zinc-800">
+          <div className="flex border-b border-zinc-800 overflow-x-auto scrollbar-hide">
             <button
               onClick={() => setActiveTab('profile')}
-              className={`flex-1 px-6 py-4 text-center transition-colors ${
+              className={`flex-1 min-w-[140px] px-4 md:px-6 py-4 text-center transition-colors whitespace-nowrap ${
                 activeTab === 'profile'
                   ? 'bg-zinc-800 text-white border-b-2 border-red-500'
                   : 'text-zinc-500 hover:text-white hover:bg-zinc-800/50'
@@ -455,7 +464,7 @@ export default function ProfilPage() {
             </button>
             <button
               onClick={() => setActiveTab('cards')}
-              className={`flex-1 px-6 py-4 text-center transition-colors ${
+              className={`flex-1 min-w-[140px] px-4 md:px-6 py-4 text-center transition-colors whitespace-nowrap ${
                 activeTab === 'cards'
                   ? 'bg-zinc-800 text-white border-b-2 border-red-500'
                   : 'text-zinc-500 hover:text-white hover:bg-zinc-800/50'
@@ -470,7 +479,7 @@ export default function ProfilPage() {
             </button>
             <button
               onClick={() => setActiveTab('purchases')}
-              className={`flex-1 px-6 py-4 text-center transition-colors ${
+              className={`flex-1 min-w-[140px] px-4 md:px-6 py-4 text-center transition-colors whitespace-nowrap ${
                 activeTab === 'purchases'
                   ? 'bg-zinc-800 text-white border-b-2 border-red-500'
                   : 'text-zinc-500 hover:text-white hover:bg-zinc-800/50'
@@ -491,7 +500,7 @@ export default function ProfilPage() {
             {activeTab === 'profile' && (
               <div className="space-y-6">
                 {/* Avatar ve Temel Bilgiler */}
-                <div className="flex items-center gap-6 pb-6 border-b border-zinc-800">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 pb-6 border-b border-zinc-800 text-center md:text-left">
                   {avatarUrl ? (
                     <Image
                       src={avatarUrl}
@@ -501,16 +510,16 @@ export default function ProfilPage() {
                       className="rounded-full border-2 border-zinc-700"
                     />
                   ) : (
-                    <div className="w-24 h-24 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center">
+                    <div className="w-24 h-24 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center shrink-0">
                       <span className="text-white text-3xl font-bold">
                         {userName.charAt(0).toUpperCase()}
                       </span>
                     </div>
                   )}
-                  <div>
+                  <div className="flex-1 w-full">
                     <h2 className="text-2xl font-bold text-white">{userName}</h2>
-                    <p className="text-zinc-500 mt-1">{user.email}</p>
-                    <div className="flex gap-2 mt-2">
+                    <p className="text-zinc-500 mt-1 break-all">{user.email}</p>
+                    <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-2">
                       {isGithubUser && (
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-zinc-800 text-zinc-400 text-sm rounded-full border border-zinc-700">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -531,21 +540,23 @@ export default function ProfilPage() {
                         </span>
                       )}
                     </div>
-                    <div className="mt-3 flex items-center gap-3">
+                    <div className="mt-3 flex flex-col md:flex-row items-center gap-3">
                       <button
                         onClick={() => setIsEditing(!isEditing)}
-                        className="primary-button px-3 py-1 text-sm"
+                        className="primary-button px-3 py-1 text-sm w-full md:w-auto"
                       >
                         {isEditing ? 'İptal' : 'Profili Düzenle'}
                       </button>
-                      <label className="text-xs text-zinc-500">Avatar yüklemek için resim seçin:</label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarSelect}
-                        className="text-sm text-zinc-400"
-                        disabled={avatarUploading}
-                      />
+                      <div className="flex items-center gap-2 w-full md:w-auto justify-center md:justify-start">
+                        <label className="text-xs text-zinc-500 whitespace-nowrap">Avatar yükle:</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarSelect}
+                          className="text-sm text-zinc-400 w-full max-w-[200px]"
+                          disabled={avatarUploading}
+                        />
+                      </div>
                       {avatarUploading && <span className="text-zinc-400 text-sm">Yükleniyor...</span>}
                     </div>
 
@@ -963,15 +974,15 @@ export default function ProfilPage() {
                               <div className="flex flex-col">
                                 <span className="text-green-500 font-semibold">{order.amount} ₺</span>
                                 {order.status === 'pending' && (
-                                    <span className="text-xs text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded mt-1 w-fit">Ödeme Bekleniyor</span>
+                                    <span className="text-xs text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded mt-1 w-fit">Onay Bekleniyor</span>
                                 )}
                               </div>
                               
                               {order.status === 'success' && (
-                                <div className="flex gap-2">
+                                <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
                                     <button 
                                         onClick={() => router.push('/dashboard/market')}
-                                        className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+                                        className="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded transition-colors flex items-center justify-center gap-1 whitespace-nowrap"
                                     >
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -983,7 +994,7 @@ export default function ProfilPage() {
                                         setSelectedOrder(order);
                                         setShowReceipt(true);
                                         }}
-                                        className="text-xs bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-1.5 rounded transition-colors flex items-center gap-1"
+                                        className="text-xs bg-zinc-700 hover:bg-zinc-600 text-white px-3 py-2 rounded transition-colors flex items-center justify-center gap-1 whitespace-nowrap"
                                     >
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

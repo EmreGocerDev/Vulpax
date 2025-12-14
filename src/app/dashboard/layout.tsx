@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import Sidebar from './components/Sidebar';
+import MobileOrientationWarning from '../components/MobileOrientationWarning';
+import { cn } from '@/lib/utils';
 
 export default function DashboardLayout({
   children,
@@ -14,7 +16,15 @@ export default function DashboardLayout({
   const { user, loading: authLoading } = useAuth();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [checkingAccess, setCheckingAccess] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    // Check screen size on mount to set initial sidebar state
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -90,8 +100,14 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-black text-white flex">
-      <Sidebar />
-      <main className="flex-1 ml-64 p-8 overflow-y-auto h-screen">
+      <MobileOrientationWarning />
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+      <main 
+        className={cn(
+          "flex-1 p-4 md:p-8 overflow-y-auto h-screen transition-all duration-300 ease-in-out pt-16 md:pt-8",
+          isSidebarOpen ? "md:ml-64" : "md:ml-20"
+        )}
+      >
         {children}
       </main>
     </div>
