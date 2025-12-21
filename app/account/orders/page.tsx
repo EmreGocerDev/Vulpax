@@ -45,7 +45,6 @@ export default async function AccountOrdersPage() {
       )
     `)
     .eq('user_id', user.id)
-    .in('payment_status', ['paid', 'refunded'])
     .order('created_at', { ascending: false });
 
   const getStatusBadge = (status: string) => {
