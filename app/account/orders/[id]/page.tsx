@@ -156,7 +156,7 @@ export default function OrderDetailPage() {
   }
 
   const subtotal = order.order_items?.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0) || 0;
-  const shipping = 0; // Ücretsiz kargo
+  const shipping: number = 0; // Ücretsiz kargo
   const tax = subtotal * 0.20; // %20 KDV
   const total = order.total_amount;
 
