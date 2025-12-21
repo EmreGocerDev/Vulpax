@@ -23,6 +23,15 @@ export async function POST(request: Request) {
     const currency = formData.get('currency') as string;
     const payment_amount = formData.get('payment_amount') as string;
 
+    // DEBUG: Tüm gelen verileri logla
+    console.log('=== PayTR Callback Received ===');
+    console.log('merchant_oid:', merchant_oid);
+    console.log('status:', status);
+    console.log('total_amount:', total_amount);
+    console.log('payment_type:', payment_type);
+    console.log('test_mode:', test_mode);
+    console.log('hash received:', hash);
+
     const merchant_key = process.env.PAYTR_MERCHANT_KEY;
     const merchant_salt = process.env.PAYTR_MERCHANT_SALT;
 
@@ -34,10 +43,15 @@ export async function POST(request: Request) {
     // Hash doğrulaması yap (GÜVENLİK İÇİN ÇOK ÖNEMLİ!)
     // PayTR'den gelen isteğin gerçekten PayTR'den geldiğini ve değiştirilmediğini kontrol et
     const hash_str = merchant_oid + merchant_salt + status + total_amount;
+    console.log('hash_str to calculate:', hash_str);
+    
     const calculated_hash = crypto
       .createHmac('sha256', merchant_key)
       .update(hash_str)
       .digest('base64');
+
+    console.log('hash calculated:', calculated_hash);
+    console.log('hash match:', hash === calculated_hash);
 
     if (hash !== calculated_hash) {
       console.error('PayTR notification failed: bad hash', {
@@ -51,6 +65,8 @@ export async function POST(request: Request) {
     // Supabase client oluştur
     const supabase = await createClient();
 
+    console.log('Looking for order with order_number:', merchant_oid);
+
     // Siparişi merchant_oid (order_number) ile bul
     const { data: order, error: orderError } = await supabase
       .from('orders')
@@ -58,11 +74,16 @@ export async function POST(request: Request) {
       .eq('order_number', merchant_oid)
       .single();
 
+    console.log('Order found:', order ? 'YES' : 'NO');
+    if (orderError) console.error('Order query error:', orderError);
+
     if (orderError || !order) {
       console.error('Order not found:', merchant_oid, orderError);
       // Yine de OK dön ki PayTR tekrar denemesin
       return new Response('OK', { status: 200 });
     }
+
+    console.log('Current order payment_status:', order.payment_status);
 
     // Eğer sipariş zaten onaylanmış veya iptal edilmişse, tekrar işlem yapma
     // Aynı bildirim birden fazla gelebilir (ağ sorunları vb.)
@@ -73,26 +94,30 @@ export async function POST(request: Request) {
 
     // Ödeme başarılıysa
     if (status === 'success') {
+      console.log('Payment SUCCESS - updating order to paid...');
+      
       // Siparişi onayla - payment_status'u paid yap
-      const { error: updateError } = await supabase
+      const { data: updatedOrder, error: updateError } = await supabase
         .from('orders')
         .update({
           payment_status: 'paid',
           payment_method: payment_type, // 'card' veya 'eft'
           updated_at: new Date().toISOString(),
         })
-        .eq('id', order.id);
+        .eq('id', order.id)
+        .select();
 
       if (updateError) {
         console.error('Failed to update order:', updateError);
         return new Response('PAYTR notification failed: database error', { status: 500 });
       }
 
-      console.log('Order payment confirmed:', {
+      console.log('Order payment confirmed successfully:', {
         order_number: merchant_oid,
         order_id: order.id,
         amount: total_amount,
         payment_type,
+        updated_data: updatedOrder,
       });
 
       // Burada e-posta/SMS bildirimi gönderilebilir

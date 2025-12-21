@@ -22,6 +22,7 @@ export default async function AccountPage() {
     .from('orders')
     .select('*')
     .eq('user_id', user.id)
+    .in('payment_status', ['paid', 'failed', 'refunded'])
     .order('created_at', { ascending: false })
     .limit(5);
 
