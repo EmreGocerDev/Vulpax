@@ -2,7 +2,7 @@
 
 Modern, profesyonel ve tam özellikli e-ticaret platformu. Next.js 15, TypeScript, Tailwind CSS, Supabase ve PayTR entegrasyonu ile geliştirilmiştir.
 
-## Özellikler
+## Özelliklertr87tıutıuytıuıtıttıutututıuttuıtuttuıtıutıutuıtıuut
 
 - 🎨 Modern ve koyu temalı arayüz
 - 🛒 Tam özellikli sepet sistemi
